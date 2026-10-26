@@ -1,0 +1,70 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+  --color-steel-950: #0c0a09;
+  --color-steel-900: #1c1917;
+  --color-steel-800: #292524;
+  --color-steel-700: #44403c;
+  --color-steel-600: #57534e;
+  --color-steel-400: #a8a29e;
+  --color-steel-200: #e7e5e4;
+  --color-steel-100: #f5f5f4;
+  --color-amber-safe: #f59e0b;
+  --color-amber-dark: #b45309;
+  --color-ok: #16a34a;
+  --color-danger: #dc2626;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-steel-100);
+  color: var(--color-steel-900);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Botones grandes para uso con manos engrasadas */
+.btn-touch {
+  min-height: 3.25rem;
+  min-width: 3.25rem;
+  padding: 0.85rem 1.25rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.btn-primary {
+  background: var(--color-amber-safe);
+  color: var(--color-steel-950);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--color-steel-800);
+  color: white;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-steel-800);
+  border: 2px solid var(--color-steel-400);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: white;
+}
