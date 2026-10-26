@@ -29,7 +29,7 @@ KSA/
 | Separación backend / frontend | Hecho |
 | Identidad visual (logo, colores negro/amarillo/verde, iconos PWA) | Hecho |
 | Frontend React + Vite + TS + Tailwind + PWA | Hecho (en `frontend/`) |
-| Migraciones SQL Supabase | 001–005 aplicadas en `eylefnchunsywabgdzhy`; **006 pendiente de ejecutar** en el SQL Editor |
+| Migraciones SQL Supabase | 001–006 aplicadas en `eylefnchunsywabgdzhy` |
 | Proyecto Supabase | `eylefnchunsywabgdzhy` |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
 | Usuarios Auth + roles | Pendiente |
@@ -67,8 +67,8 @@ KSA/
 
 ## Pendiente inmediato
 
-1. Ejecutar `backend/migrations/006_function_privileges.sql` en el SQL Editor de `eylefnchunsywabgdzhy`.
-2. Crear `davidcopete123@gmail.com` en Authentication y promoverlo a `admin`.
+1. Crear `davidcopete123@gmail.com` en Authentication y promoverlo a `admin`.
+2. Activar *Leaked password protection* en Authentication (aviso del advisor).
 3. `cd frontend && npm run dev`
 4. Vercel: Root Directory = `frontend`.
 
