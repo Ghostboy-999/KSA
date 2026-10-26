@@ -14,7 +14,7 @@ npm run dev
 En `.env.local` (desde Supabase → Project Settings → API):
 
 ```
-VITE_SUPABASE_URL=https://TU_PROYECTO.supabase.co
+VITE_SUPABASE_URL=https://eylefnchunsywabgdzhy.supabase.co
 VITE_SUPABASE_ANON_KEY=tu_anon_key
 ```
 

@@ -2,7 +2,7 @@
 
 **Fecha:** 26 oct 2026  
 **Versión app:** 0.1.0  
-**Fase actual:** Fase 1 (tablero + inventario) — código listo; pendiente conectar Supabase  
+**Fase actual:** Fase 1 (tablero + inventario) — código listo; conectando Supabase (`eylefnchunsywabgdzhy`)  
 **Estructura:** monorepo `backend/` + `frontend/`
 
 ---
@@ -27,9 +27,11 @@ KSA/
 | Área | Estado |
 |------|--------|
 | Separación backend / frontend | Hecho |
+| Identidad visual (logo, colores negro/amarillo/verde, iconos PWA) | Hecho |
 | Frontend React + Vite + TS + Tailwind + PWA | Hecho (en `frontend/`) |
-| Migraciones SQL Supabase | Escritas en `backend/migrations/`; **no aplicadas aún** |
-| `.env.local` en `frontend/` | Pendiente |
+| Migraciones SQL Supabase | 001–005 listas (`backend/setup_completo.sql`), probadas en Postgres local; **pendiente ejecutarlas en el proyecto** |
+| Proyecto Supabase | `eylefnchunsywabgdzhy` |
+| `.env.local` en `frontend/` | URL puesta; **falta anon key** |
 | Usuarios Auth + roles | Pendiente |
 | Deploy Vercel (root dir = `frontend`) | Pendiente |
 | Fase 2 / 3 | No iniciadas |
@@ -50,6 +52,7 @@ KSA/
 
 - Login, shell por rol, tablero Kanban/lista, detalle OT, nueva OT, inventario, admin usuarios
 - Realtime, PWA, fotos opcionales
+- Marca KSA: logo en `public/logo-ksa.png`, favicon e iconos PWA generados del logo, paleta en `src/index.css` (`ksa-black`, `ksa-yellow` #FFE000, `ksa-green` #009A1E) y franja de seguridad `.hazard-stripe`
 
 ### Backend (`backend/migrations/`)
 
@@ -57,14 +60,15 @@ KSA/
 2. `002_rls.sql`
 3. `003_triggers.sql`
 4. `004_views_seed.sql`
+5. `005_security_fixes.sql` — evita que un usuario se haga admin solo; vistas respetan RLS
 
 ---
 
 ## Pendiente inmediato
 
-1. Ejecutar migraciones en Supabase SQL Editor.
-2. `frontend/.env.local` con URL + anon key.
-3. Crear usuarios y promover `admin`.
+1. Pegar `backend/setup_completo.sql` en el SQL Editor de `eylefnchunsywabgdzhy`.
+2. Anon key en `frontend/.env.local` (la URL ya está).
+3. Crear `davidcopete123@gmail.com` en Authentication y promoverlo a `admin`.
 4. `cd frontend && npm run dev`
 5. Vercel: Root Directory = `frontend`.
 

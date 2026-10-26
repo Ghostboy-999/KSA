@@ -4,7 +4,7 @@ import { ROLE_LABELS } from '../../types/database'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   [
-    'btn-touch flex-1 text-center text-sm sm:text-base',
+    'btn-touch flex-auto shrink-0 whitespace-nowrap text-center text-sm sm:text-base',
     isActive ? 'btn-primary' : 'btn-secondary',
   ].join(' ')
 
@@ -15,24 +15,32 @@ export function AppShell() {
 
   return (
     <div className="flex min-h-full flex-col bg-steel-100">
-      <header className="sticky top-0 z-20 border-b border-steel-700 bg-steel-900 px-4 py-3 text-steel-100">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-amber-safe">
-              Servicios Industriales
-            </p>
-            <h1 className="text-xl font-bold sm:text-2xl">KSA Taller</h1>
+      <header className="sticky top-0 z-20 bg-ksa-black text-steel-100">
+        <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-3 px-4">
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo-ksa.png"
+              alt="KSA S.A.S Servicios Industriales"
+              className="h-14 w-auto"
+            />
+            <div className="hidden sm:block">
+              <p className="text-xs uppercase tracking-widest text-ksa-green">
+                Servicios Industriales
+              </p>
+              <h1 className="text-xl font-bold text-ksa-yellow sm:text-2xl">KSA Taller</h1>
+            </div>
           </div>
           <div className="text-right text-sm">
             <p className="font-semibold">{profile?.full_name}</p>
-            <p className="text-steel-400">
+            <p className="text-ksa-yellow">
               {profile ? ROLE_LABELS[profile.role] : ''}
             </p>
           </div>
         </div>
+        <div className="hazard-stripe" aria-hidden="true" />
       </header>
 
-      <nav className="sticky top-[4.5rem] z-10 border-b border-steel-200 bg-steel-100/95 px-2 py-2 backdrop-blur">
+      <nav className="sticky top-[5rem] z-10 border-b border-steel-200 bg-steel-100/95 px-2 py-2 backdrop-blur">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto">
           <NavLink to="/" end className={linkClass}>
             Tablero
@@ -52,7 +60,7 @@ export function AppShell() {
               Usuarios
             </NavLink>
           )}
-          <button type="button" className="btn-touch btn-ghost" onClick={() => void signOut()}>
+          <button type="button" className="btn-touch btn-ghost shrink-0" onClick={() => void signOut()}>
             Salir
           </button>
         </div>

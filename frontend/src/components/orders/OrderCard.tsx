@@ -9,7 +9,7 @@ import {
 const priorityColor: Record<Order['priority'], string> = {
   baja: 'bg-steel-400',
   media: 'bg-steel-700',
-  alta: 'bg-amber-dark',
+  alta: 'bg-warn',
   urgente: 'bg-danger',
 }
 

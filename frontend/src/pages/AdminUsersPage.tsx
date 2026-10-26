@@ -46,7 +46,7 @@ export function AdminUsersPage() {
           Cree usuarios en Supabase → Authentication → Users. Luego asigne el rol aquí.
           El primer admin: después de crear su cuenta, ejecute en SQL (ver también backend/README.md):
         </p>
-        <pre className="mt-2 overflow-x-auto rounded-lg bg-steel-900 p-3 text-xs text-amber-safe">
+        <pre className="mt-2 overflow-x-auto rounded-lg bg-steel-900 p-3 text-xs text-ksa-yellow">
 {`update profiles set role = 'admin'
 where id = (select id from auth.users where email = 'su@correo.com');`}
         </pre>
