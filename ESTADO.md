@@ -29,10 +29,10 @@ KSA/
 | Separación backend / frontend | Hecho |
 | Identidad visual (logo, colores negro/amarillo/verde, iconos PWA) | Hecho |
 | Frontend React + Vite + TS + Tailwind + PWA | Hecho (en `frontend/`) |
-| Migraciones SQL Supabase | 001–005 listas (`backend/setup_completo.sql`), probadas en Postgres local; **pendiente ejecutarlas en el proyecto** |
+| Migraciones SQL Supabase | 001–006 aplicadas en `eylefnchunsywabgdzhy` |
 | Proyecto Supabase | `eylefnchunsywabgdzhy` |
-| `.env.local` en `frontend/` | URL puesta; **falta anon key** |
-| Usuarios Auth + roles | Pendiente |
+| `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
+| Usuarios Auth + roles | Admin `davidcopete123@gmail.com` (David Torres) creado |
 | Deploy Vercel (root dir = `frontend`) | Pendiente |
 | Fase 2 / 3 | No iniciadas |
 
@@ -61,16 +61,16 @@ KSA/
 3. `003_triggers.sql`
 4. `004_views_seed.sql`
 5. `005_security_fixes.sql` — evita que un usuario se haga admin solo; vistas respetan RLS
+6. `006_function_privileges.sql` — funciones internas fuera de la API pública
 
 ---
 
 ## Pendiente inmediato
 
-1. Pegar `backend/setup_completo.sql` en el SQL Editor de `eylefnchunsywabgdzhy`.
-2. Anon key en `frontend/.env.local` (la URL ya está).
-3. Crear `davidcopete123@gmail.com` en Authentication y promoverlo a `admin`.
-4. `cd frontend && npm run dev`
-5. Vercel: Root Directory = `frontend`.
+1. Crear al resto del equipo desde Authentication (entran como `trabajador`) y asignar roles en la pantalla Usuarios.
+2. Activar *Leaked password protection* en Authentication (aviso del advisor).
+3. `cd frontend && npm run dev`
+4. Vercel: Root Directory = `frontend`.
 
 ---
 
