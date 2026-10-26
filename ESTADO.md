@@ -32,7 +32,7 @@ KSA/
 | Migraciones SQL Supabase | 001–006 aplicadas en `eylefnchunsywabgdzhy` |
 | Proyecto Supabase | `eylefnchunsywabgdzhy` |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
-| Usuarios Auth + roles | Pendiente |
+| Usuarios Auth + roles | Admin `davidcopete123@gmail.com` (David Torres) creado |
 | Deploy Vercel (root dir = `frontend`) | Pendiente |
 | Fase 2 / 3 | No iniciadas |
 
@@ -67,7 +67,7 @@ KSA/
 
 ## Pendiente inmediato
 
-1. Crear `davidcopete123@gmail.com` en Authentication y promoverlo a `admin`.
+1. Crear al resto del equipo desde Authentication (entran como `trabajador`) y asignar roles en la pantalla Usuarios.
 2. Activar *Leaked password protection* en Authentication (aviso del advisor).
 3. `cd frontend && npm run dev`
 4. Vercel: Root Directory = `frontend`.
