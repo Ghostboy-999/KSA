@@ -27,6 +27,7 @@ KSA/
 | Área | Estado |
 |------|--------|
 | Separación backend / frontend | Hecho |
+| Identidad visual (logo, colores negro/amarillo/verde, iconos PWA) | Hecho |
 | Frontend React + Vite + TS + Tailwind + PWA | Hecho (en `frontend/`) |
 | Migraciones SQL Supabase | Escritas en `backend/migrations/`; **no aplicadas aún** |
 | `.env.local` en `frontend/` | Pendiente |
@@ -50,6 +51,7 @@ KSA/
 
 - Login, shell por rol, tablero Kanban/lista, detalle OT, nueva OT, inventario, admin usuarios
 - Realtime, PWA, fotos opcionales
+- Marca KSA: logo en `public/logo-ksa.png`, favicon e iconos PWA generados del logo, paleta en `src/index.css` (`ksa-black`, `ksa-yellow` #FFE000, `ksa-green` #009A1E) y franja de seguridad `.hazard-stripe`
 
 ### Backend (`backend/migrations/`)
 

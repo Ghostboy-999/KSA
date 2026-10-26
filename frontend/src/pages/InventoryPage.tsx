@@ -65,8 +65,8 @@ export function InventoryPage() {
       )}
 
       {belowMin.length > 0 && (
-        <section className="rounded-xl border-2 border-amber-dark bg-amber-50 p-4">
-          <h3 className="mb-2 text-lg font-bold text-amber-dark">
+        <section className="rounded-xl border-2 border-warn bg-ksa-yellow-soft p-4">
+          <h3 className="mb-2 text-lg font-bold text-warn">
             Bajo mínimo de reposición
           </h3>
           <ul className="space-y-1 text-sm">
@@ -96,7 +96,7 @@ export function InventoryPage() {
               return (
                 <tr
                   key={m.id}
-                  className={`border-b border-steel-200 ${low ? 'bg-amber-50' : ''}`}
+                  className={`border-b border-steel-200 ${low ? 'bg-ksa-yellow-soft' : ''}`}
                 >
                   <td className="px-3 py-3 font-semibold">{m.name}</td>
                   <td className="px-3 py-3 font-mono">{m.grade}</td>
