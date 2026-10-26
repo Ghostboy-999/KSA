@@ -44,7 +44,7 @@ export function AdminUsersPage() {
         <h2 className="text-2xl font-bold">Usuarios</h2>
         <p className="text-steel-600">
           Cree usuarios en Supabase → Authentication → Users. Luego asigne el rol aquí.
-          El primer admin: después de crear su cuenta, ejecute en SQL:
+          El primer admin: después de crear su cuenta, ejecute en SQL (ver también backend/README.md):
         </p>
         <pre className="mt-2 overflow-x-auto rounded-lg bg-steel-900 p-3 text-xs text-amber-safe">
 {`update profiles set role = 'admin'
