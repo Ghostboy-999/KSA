@@ -1,13 +1,15 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { updateRequestStatus } from '../hooks/useClientRequests'
 import { createOrder } from '../hooks/useOrders'
 import { supabase } from '../lib/supabase'
-import type { Client, OrderPriority, Profile } from '../types/database'
+import type { Client, ClientRequest, OrderPriority, Profile } from '../types/database'
 
 export function NewOrderPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const requestId = useSearchParams()[0].get('solicitud')
   const [clients, setClients] = useState<Client[]>([])
   const [workers, setWorkers] = useState<Profile[]>([])
   const [newClientName, setNewClientName] = useState('')
@@ -39,6 +41,31 @@ export function NewOrderPage() {
       setWorkers((w.data as Profile[]) ?? [])
     })
   }, [])
+
+  // Desde una solicitud de cliente: precargar cliente, descripción y fecha
+  useEffect(() => {
+    if (!requestId) return
+    void supabase
+      .from('client_requests')
+      .select('*')
+      .eq('id', requestId)
+      .maybeSingle()
+      .then(({ data }) => {
+        const r = data as ClientRequest | null
+        if (!r) return
+        setClientId(r.client_id)
+        setDescription(
+          [
+            r.description,
+            r.measures && `Medidas: ${r.measures}`,
+            r.quantity > 1 && `Cantidad: ${r.quantity}`,
+          ]
+            .filter(Boolean)
+            .join('\n'),
+        )
+        if (r.desired_date) setDueDate(r.desired_date)
+      })
+  }, [requestId])
 
   async function ensureClient(): Promise<string | null> {
     if (clientId) return clientId
@@ -83,12 +110,22 @@ export function NewOrderPage() {
       setError(err ?? 'Error al crear')
       return
     }
+    if (requestId) {
+      const reqErr = await updateRequestStatus(requestId, 'aceptada', { order_id: data.id })
+      if (reqErr) console.error('No se pudo marcar la solicitud como aceptada', reqErr)
+    }
     navigate(`/orden/${data.id}`)
   }
 
   return (
     <form onSubmit={onSubmit} className="mx-auto max-w-xl space-y-4">
       <h2 className="text-2xl font-bold">Nueva orden de trabajo</h2>
+      {requestId && (
+        <p className="rounded-lg border-2 border-ksa-green bg-white px-3 py-2 text-sm">
+          Desde una solicitud de cliente: al crear la orden, la solicitud queda aceptada y el
+          cliente verá el código.
+        </p>
+      )}
       <p className="text-steel-600">
         Un solo formulario: cliente, descripción, fecha y prioridad.
       </p>

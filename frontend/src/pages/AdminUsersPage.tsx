@@ -43,7 +43,9 @@ export function AdminUsersPage() {
       <div>
         <h2 className="text-2xl font-bold">Usuarios</h2>
         <p className="text-steel-600">
-          Cree usuarios en Supabase → Authentication → Users. Luego asigne el rol aquí.
+          Toda cuenta nueva entra como <strong>Cliente</strong> (los clientes se registran solos
+          desde la app). Para el equipo: cree el usuario en Supabase → Authentication → Users y
+          luego cámbiele aquí el rol a Trabajador, Gerencia o Administrador.
           El primer admin: después de crear su cuenta, ejecute en SQL (ver también backend/README.md):
         </p>
         <pre className="mt-2 overflow-x-auto rounded-lg bg-steel-900 p-3 text-xs text-ksa-yellow">

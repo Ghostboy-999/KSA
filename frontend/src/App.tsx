@@ -9,6 +9,8 @@ import { IssuesPage } from './pages/IssuesPage'
 import { LoginPage } from './pages/LoginPage'
 import { NewOrderPage } from './pages/NewOrderPage'
 import { OrderDetailPage } from './pages/OrderDetailPage'
+import { RequestsPage } from './pages/RequestsPage'
+import { SignupPage } from './pages/SignupPage'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 
 export default function App() {
@@ -17,6 +19,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/registro" element={<SignupPage />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<AppShell />}>
               <Route index element={<BoardPage />} />
@@ -25,6 +28,7 @@ export default function App() {
               <Route element={<RoleGate roles={['admin', 'gerente']} />}>
                 <Route path="nueva-orden" element={<NewOrderPage />} />
                 <Route path="inconvenientes" element={<IssuesPage />} />
+                <Route path="solicitudes" element={<RequestsPage />} />
               </Route>
               <Route element={<RoleGate roles={['admin']} />}>
                 <Route path="usuarios" element={<AdminUsersPage />} />

@@ -21,6 +21,8 @@ export type IssueType =
 
 export type IssueStatus = 'abierto' | 'resuelto'
 
+export type RequestStatus = 'pendiente' | 'en_revision' | 'aceptada' | 'rechazada'
+
 export interface Profile {
   id: string
   full_name: string
@@ -35,6 +37,7 @@ export interface Client {
   phone: string | null
   email: string | null
   notes: string | null
+  user_id?: string | null
   created_at: string
 }
 
@@ -78,6 +81,37 @@ export interface Order {
   clients?: Pick<Client, 'name' | 'phone'> | null
   profiles?: Pick<Profile, 'full_name'> | null
   order_issues?: Pick<OrderIssue, 'status'>[]
+}
+
+/** Lo que un cliente ve de sus órdenes (función client_orders). */
+export interface ClientOrder {
+  id: string
+  code: string
+  description: string
+  stage: OrderStage
+  priority: OrderPriority
+  due_date: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ClientRequest {
+  id: string
+  client_id: string
+  created_by: string | null
+  description: string
+  measures: string | null
+  quantity: number
+  desired_date: string | null
+  photo_paths: string[]
+  status: RequestStatus
+  response: string | null
+  order_id: string | null
+  reviewed_by: string | null
+  reviewed_at: string | null
+  created_at: string
+  clients?: Pick<Client, 'name' | 'phone' | 'email'> | null
+  orders?: Pick<Order, 'code'> | null
 }
 
 export interface OrderIssue {
@@ -175,6 +209,13 @@ export const ISSUE_TYPE_LABELS: Record<IssueType, string> = {
   error_medidas: 'Error en medidas o especificaciones',
   retraso_externo: 'Retraso por causa externa',
   otro: 'Otro',
+}
+
+export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
+  pendiente: 'Pendiente',
+  en_revision: 'En revisión',
+  aceptada: 'Aceptada',
+  rechazada: 'Rechazada',
 }
 
 export function openIssueCount(order: Pick<Order, 'order_issues'>): number {
