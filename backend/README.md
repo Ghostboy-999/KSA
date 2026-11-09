@@ -6,7 +6,7 @@ Proyecto: `eylefnchunsywabgdzhy` — https://eylefnchunsywabgdzhy.supabase.co
 
 ## Instalación rápida
 
-Pega **todo** [`setup_completo.sql`](setup_completo.sql) en Supabase → **SQL Editor** → **Run**, una sola vez en un proyecto vacío. Contiene las migraciones 001–008 en orden.
+Pega **todo** [`setup_completo.sql`](setup_completo.sql) en Supabase → **SQL Editor** → **Run**, una sola vez en un proyecto vacío. Contiene las migraciones 001–009 en orden.
 
 ## Migraciones
 
@@ -20,6 +20,7 @@ Si prefieres aplicarlas una a una, **en este orden**:
 6. `migrations/006_function_privileges.sql` — las funciones de triggers y los helpers de RLS no se pueden llamar por `/rest/v1/rpc` (helpers solo para `authenticated`)
 7. `migrations/007_order_issues.sql` — inconvenientes por orden (`order_issues`): el equipo reporta, gerencia resuelve; Realtime activado
 8. `migrations/008_client_portal.sql` — portal de clientes: toda cuenta nueva entra como `cliente`, vínculo cuenta↔ficha por correo confirmado (`claim_client_account`), órdenes del cliente vía `client_orders()`, tabla `client_requests` y bucket privado `request-photos`
+9. `migrations/009_keep_admin.sql` — siempre queda al menos un admin activo (también desde el SQL Editor) y nadie cambia su propio rol ni se desactiva desde la app
 
 Si cambias una migración, regenera `setup_completo.sql` (concatenación de `migrations/00*.sql`).
 
