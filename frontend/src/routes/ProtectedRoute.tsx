@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function ProtectedRoute({ roles }: Props) {
-  const { session, profile, loading } = useAuth()
+  const { session, profile, profileError, loading, refreshProfile, signOut } = useAuth()
 
   if (loading) {
     return (
@@ -20,7 +20,33 @@ export function ProtectedRoute({ roles }: Props) {
 
   if (!session) return <Navigate to="/login" replace />
 
-  if (!profile?.active) {
+  // Recién iniciada la sesión el perfil tarda un momento en llegar:
+  // mientras tanto no es "cuenta inactiva", es "cargando".
+  if (!profile || profile.id !== session.user.id) {
+    if (profileError) {
+      return (
+        <div className="mx-auto max-w-md space-y-3 p-6 text-center">
+          <h1 className="text-xl font-bold">No se pudo cargar tu perfil</h1>
+          <p>Revisa tu conexión e inténtalo de nuevo.</p>
+          <div className="flex justify-center gap-2">
+            <button type="button" className="btn-touch btn-primary" onClick={() => void refreshProfile()}>
+              Reintentar
+            </button>
+            <button type="button" className="btn-touch btn-ghost" onClick={() => void signOut()}>
+              Salir
+            </button>
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div className="flex min-h-full items-center justify-center text-lg font-semibold">
+        Cargando…
+      </div>
+    )
+  }
+
+  if (!profile.active) {
     return (
       <div className="mx-auto max-w-md p-6 text-center">
         <h1 className="mb-2 text-xl font-bold">Cuenta inactiva</h1>
