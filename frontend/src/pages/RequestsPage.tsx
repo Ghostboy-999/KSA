@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { BusyLabel, SkeletonList } from '../components/ui/Loading'
+import { staggerStyle } from '../lib/motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { RequestPhotos } from '../components/requests/RequestPhotos'
 import { updateRequestStatus, useClientRequests } from '../hooks/useClientRequests'
@@ -11,7 +13,7 @@ const statusColor: Record<RequestStatus, string> = {
   rechazada: 'bg-steel-700',
 }
 
-function RequestCard({ req }: { req: ClientRequest }) {
+function RequestCard({ req, index }: { req: ClientRequest; index: number }) {
   const navigate = useNavigate()
   const [response, setResponse] = useState(req.response ?? '')
   const [busy, setBusy] = useState(false)
@@ -27,7 +29,7 @@ function RequestCard({ req }: { req: ClientRequest }) {
   }
 
   return (
-    <li className="space-y-2 rounded-xl bg-white p-4 shadow">
+    <li className="stagger card-lift space-y-2 rounded-xl bg-white p-4 shadow" style={staggerStyle(index)}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="font-bold">{req.clients?.name ?? 'Cliente'}</p>
@@ -72,15 +74,15 @@ function RequestCard({ req }: { req: ClientRequest }) {
               disabled={busy}
               onClick={() => navigate(`/nueva-orden?solicitud=${req.id}`)}
             >
-              Crear orden
+              <BusyLabel busy={busy} busyText="…">Crear orden</BusyLabel>
             </button>
             {req.status === 'pendiente' && (
               <button type="button" className="btn-touch btn-ghost flex-1" disabled={busy} onClick={() => void setStatus('en_revision')}>
-                En revisión
+                <BusyLabel busy={busy} busyText="Guardando…">En revisión</BusyLabel>
               </button>
             )}
             <button type="button" className="btn-touch btn-danger flex-1" disabled={busy} onClick={() => void setStatus('rechazada')}>
-              Rechazar
+              <BusyLabel busy={busy} busyText="Guardando…">Rechazar</BusyLabel>
             </button>
           </div>
         </div>
@@ -118,14 +120,14 @@ export function RequestsPage() {
           {showAll ? 'Solo abiertas' : 'Ver todas'}
         </button>
       </div>
-      {loading && <p>Cargando…</p>}
+      {loading && <SkeletonList count={3} lines={3} />}
       {error && <p className="text-danger">{error}</p>}
       {!loading && requests.length === 0 && (
-        <p className="rounded-xl bg-white px-4 py-3 text-steel-600 shadow">No hay solicitudes.</p>
+        <p className="anim-fade-in rounded-xl bg-white px-4 py-3 text-steel-600 shadow">No hay solicitudes.</p>
       )}
       <ul className="space-y-3">
-        {requests.map((r) => (
-          <RequestCard key={r.id} req={r} />
+        {requests.map((r, i) => (
+          <RequestCard key={r.id} req={r} index={i} />
         ))}
       </ul>
     </div>

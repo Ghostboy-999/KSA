@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SkeletonList } from '../components/ui/Loading'
 import { IssueItem } from '../components/issues/IssueItem'
 import { useIssues } from '../hooks/useIssues'
 
@@ -27,16 +28,16 @@ export function IssuesPage() {
         </button>
       </div>
 
-      {loading && <p>Cargando…</p>}
+      {loading && <SkeletonList count={3} />}
       {error && <p className="text-danger">{error}</p>}
 
       {!loading && (
         <ul className="space-y-3">
-          {open.map((i) => (
-            <IssueItem key={i.id} issue={i} canResolve showOrder onChanged={() => void reload()} />
+          {open.map((i, n) => (
+            <IssueItem key={i.id} index={n} issue={i} canResolve showOrder onChanged={() => void reload()} />
           ))}
           {open.length === 0 && (
-            <li className="rounded-lg bg-white px-3 py-4 text-steel-600 shadow">
+            <li className="anim-fade-in rounded-lg bg-white px-3 py-4 text-steel-600 shadow">
               No hay inconvenientes abiertos.
             </li>
           )}
@@ -47,8 +48,8 @@ export function IssuesPage() {
         <section>
           <h3 className="mb-2 text-lg font-bold">Resueltos recientes</h3>
           <ul className="space-y-3">
-            {resolved.map((i) => (
-              <IssueItem key={i.id} issue={i} canResolve showOrder onChanged={() => void reload()} />
+            {resolved.map((i, n) => (
+              <IssueItem key={i.id} index={n} issue={i} canResolve showOrder onChanged={() => void reload()} />
             ))}
           </ul>
         </section>

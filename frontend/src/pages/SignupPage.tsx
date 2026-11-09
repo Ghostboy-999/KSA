@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { BusyLabel } from '../components/ui/Loading'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
@@ -51,12 +52,12 @@ export function SignupPage() {
     <div className="flex min-h-full flex-col bg-ksa-black">
       <div className="hazard-stripe" aria-hidden="true" />
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-8">
-        <img src="/logo-ksa.png" alt="KSA S.A.S Servicios Industriales" className="w-48 max-w-full" />
-        <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
+        <img src="/logo-ksa.png" alt="KSA S.A.S Servicios Industriales" className="anim-fade-in w-48 max-w-full" />
+        <div className="anim-fade-up w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl" style={{ animationDelay: '120ms' }}>
           <div className="hazard-stripe" aria-hidden="true" />
           {sentTo ? (
-            <div className="space-y-4 p-6">
-              <h1 className="text-2xl font-bold">Revisa tu correo</h1>
+            <div className="anim-fade-in space-y-4 p-6">
+              <h1 className="text-2xl font-bold">📬 Revisa tu correo</h1>
               <p className="text-steel-700">
                 Te enviamos un enlace a <strong>{sentTo}</strong>. Ábrelo para activar tu cuenta y
                 luego ingresa.
@@ -99,9 +100,9 @@ export function SignupPage() {
                 <span className="mb-1 block text-sm font-semibold">Repite la contraseña</span>
                 <input type="password" required minLength={8} autoComplete="new-password" className={input} value={password2} onChange={(e) => setPassword2(e.target.value)} />
               </label>
-              {error && <p className="rounded-lg bg-red-100 px-3 py-2 text-sm text-danger">{error}</p>}
+              {error && <p key={error} className="anim-slide-down rounded-lg bg-red-100 px-3 py-2 text-sm text-danger" role="alert">{error}</p>}
               <button type="submit" className="btn-touch btn-primary w-full" disabled={submitting}>
-                {submitting ? 'Creando…' : 'Crear cuenta'}
+                <BusyLabel busy={submitting} busyText="Creando…">Crear cuenta</BusyLabel>
               </button>
               <p className="text-center text-sm">
                 ¿Ya tienes cuenta?{' '}

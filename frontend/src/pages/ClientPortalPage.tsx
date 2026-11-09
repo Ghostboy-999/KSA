@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { BusyLabel, SkeletonList } from '../components/ui/Loading'
+import { staggerStyle } from '../lib/motion'
 import { RequestPhotos } from '../components/requests/RequestPhotos'
 import { useAuth } from '../contexts/AuthContext'
 import {
@@ -28,7 +30,9 @@ function StageProgress({ order }: { order: ClientOrder }) {
     <div>
       <div className="flex gap-1" aria-hidden="true">
         {STAGES.map((s, n) => (
-          <span key={s} className={`h-2 flex-1 rounded ${n <= i ? 'bg-ksa-green' : 'bg-steel-200'}`} />
+          <span key={s} className="h-2 flex-1 overflow-hidden rounded bg-steel-200">
+            {n <= i && <span className="grow-x block h-full bg-ksa-green" style={staggerStyle(n)} />}
+          </span>
         ))}
       </div>
       <p className="mt-1 text-sm font-semibold">
@@ -70,7 +74,7 @@ function NewRequestForm({ userId, onDone }: { userId: string; onDone: () => void
   const input = 'w-full rounded-xl border-2 border-steel-400 bg-white px-4 py-3'
 
   return (
-    <form onSubmit={submit} className="space-y-3 rounded-xl bg-white p-4 shadow">
+    <form onSubmit={submit} className="anim-fade-up space-y-3 rounded-xl bg-white p-4 shadow">
       <h3 className="text-lg font-bold">Nueva solicitud</h3>
       <label className="block">
         <span className="mb-1 block text-sm font-semibold">¿Qué necesitas?</span>
@@ -105,7 +109,7 @@ function NewRequestForm({ userId, onDone }: { userId: string; onDone: () => void
       </label>
       {err && <p className="rounded-lg bg-red-100 px-3 py-2 text-sm text-danger">{err}</p>}
       <button type="submit" className="btn-touch btn-primary w-full" disabled={busy}>
-        {busy ? 'Enviando…' : 'Enviar solicitud'}
+        <BusyLabel busy={busy} busyText={photos.length ? 'Subiendo fotos…' : 'Enviando…'}>Enviar solicitud</BusyLabel>
       </button>
     </form>
   )
@@ -116,6 +120,7 @@ export function ClientPortalPage() {
   const [orders, setOrders] = useState<ClientOrder[]>([])
   const [linked, setLinked] = useState<boolean | null>(null)
   const [ordersErr, setOrdersErr] = useState<string | null>(null)
+  const [ordersLoading, setOrdersLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const { requests, loading: reqLoading } = useClientRequests()
@@ -126,6 +131,7 @@ export function ClientPortalPage() {
     const res = await fetchClientOrders()
     setOrders(res.orders)
     setOrdersErr(res.error)
+    setOrdersLoading(false)
   }, [])
 
   useEffect(() => {
@@ -136,7 +142,7 @@ export function ClientPortalPage() {
     <div className="flex min-h-full flex-col bg-steel-100">
       <header className="bg-ksa-black text-steel-100">
         <div className="mx-auto flex h-[4.5rem] max-w-3xl items-center justify-between gap-3 px-4">
-          <img src="/logo-ksa.png" alt="KSA S.A.S Servicios Industriales" className="h-14 w-auto" />
+          <img src="/logo-ksa.png" alt="KSA S.A.S Servicios Industriales" className="anim-fade-in h-14 w-auto" />
           <div className="flex items-center gap-3 text-right text-sm">
             <div>
               <p className="font-semibold">{profile?.full_name}</p>
@@ -152,7 +158,7 @@ export function ClientPortalPage() {
 
       <main className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-3 py-4 sm:px-4">
         {notice && (
-          <p className="rounded-xl border-2 border-ksa-green bg-white px-4 py-3 font-medium">{notice}</p>
+          <p key={notice} className="anim-slide-down rounded-xl border-2 border-ksa-green bg-white px-4 py-3 font-medium" role="status">{notice}</p>
         )}
 
         <section className="space-y-3">
@@ -174,15 +180,15 @@ export function ClientPortalPage() {
               }}
             />
           )}
-          {reqLoading && <p>Cargando…</p>}
+          {reqLoading && <SkeletonList count={2} />}
           {!reqLoading && requests.length === 0 && !showForm && (
             <p className="rounded-xl bg-white px-4 py-3 text-steel-600 shadow">
               Aún no has enviado solicitudes.
             </p>
           )}
           <ul className="space-y-3">
-            {requests.map((r) => (
-              <li key={r.id} className="rounded-xl bg-white p-4 shadow">
+            {requests.map((r, n) => (
+              <li key={r.id} className="stagger card-lift rounded-xl bg-white p-4 shadow" style={staggerStyle(n)}>
                 <div className="flex items-start justify-between gap-2">
                   <p className="whitespace-pre-line font-semibold">{r.description}</p>
                   <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-bold uppercase text-white ${statusColor[r.status]}`}>
@@ -214,20 +220,21 @@ export function ClientPortalPage() {
         <section className="space-y-3">
           <h2 className="text-2xl font-bold">Mis órdenes</h2>
           {ordersErr && <p className="text-danger">{ordersErr}</p>}
-          {linked === false && orders.length === 0 && (
+          {ordersLoading && <SkeletonList count={2} lines={1} />}
+          {!ordersLoading && linked === false && orders.length === 0 && (
             <p className="rounded-xl bg-white px-4 py-3 text-steel-600 shadow">
               No encontramos órdenes con tu correo. Si ya trabajaste con KSA, pide que registren
               este correo en tu ficha de cliente.
             </p>
           )}
-          {linked && orders.length === 0 && (
+          {!ordersLoading && linked && orders.length === 0 && (
             <p className="rounded-xl bg-white px-4 py-3 text-steel-600 shadow">
               Todavía no tienes órdenes.
             </p>
           )}
           <ul className="space-y-3">
-            {orders.map((o) => (
-              <li key={o.id} className="space-y-2 rounded-xl border-2 border-steel-700 bg-white p-4">
+            {orders.map((o, n) => (
+              <li key={o.id} className="stagger card-lift space-y-2 rounded-xl border-2 border-steel-700 bg-white p-4" style={staggerStyle(n)}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="font-mono text-sm font-bold">{o.code}</p>

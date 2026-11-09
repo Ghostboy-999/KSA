@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { BusyLabel } from '../components/ui/Loading'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -35,11 +36,12 @@ export function LoginPage() {
         <img
           src="/logo-ksa.png"
           alt="KSA S.A.S Servicios Industriales"
-          className="w-56 max-w-full sm:w-72"
+          className="anim-fade-in w-56 max-w-full sm:w-72"
         />
         <form
           onSubmit={onSubmit}
-          className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl"
+          className="anim-fade-up w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl"
+          style={{ animationDelay: '120ms' }}
         >
           <div className="hazard-stripe" aria-hidden="true" />
           <div className="p-6">
@@ -74,7 +76,7 @@ export function LoginPage() {
             </label>
 
             {error && (
-              <p className="mb-4 rounded-lg bg-red-100 px-3 py-2 text-sm text-danger">
+              <p key={error} className="anim-slide-down mb-4 rounded-lg bg-red-100 px-3 py-2 text-sm text-danger" role="alert">
                 {error}
               </p>
             )}
@@ -84,7 +86,7 @@ export function LoginPage() {
               className="btn-touch btn-primary w-full"
               disabled={submitting}
             >
-              {submitting ? 'Entrando…' : 'Entrar'}
+              <BusyLabel busy={submitting} busyText="Entrando…">Entrar</BusyLabel>
             </button>
 
             <p className="mt-4 text-center text-sm">

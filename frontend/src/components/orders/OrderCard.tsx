@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { BusyLabel } from '../ui/Loading'
 import {
   PRIORITY_LABELS,
   STAGE_LABELS,
@@ -25,7 +26,7 @@ export function OrderCard({ order, onAdvance, busy }: Props) {
   const issues = openIssueCount(order)
 
   return (
-    <article className="rounded-xl border-2 border-steel-700 bg-white p-3 shadow-sm">
+    <article className="card-lift rounded-xl border-2 border-steel-700 bg-white p-3 shadow-sm">
       <div className="mb-2 flex items-start justify-between gap-2">
         <div>
           <p className="font-mono text-sm font-bold text-steel-800">{order.code}</p>
@@ -70,7 +71,7 @@ export function OrderCard({ order, onAdvance, busy }: Props) {
             disabled={busy}
             onClick={() => onAdvance(order)}
           >
-            → {STAGE_LABELS[next]}
+            <BusyLabel busy={!!busy} busyText="Moviendo…">→ {STAGE_LABELS[next]}</BusyLabel>
           </button>
         )}
       </div>

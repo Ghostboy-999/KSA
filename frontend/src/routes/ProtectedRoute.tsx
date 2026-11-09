@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { FullScreenLoader } from '../components/ui/Loading'
 import { useAuth } from '../contexts/AuthContext'
 import { ClientPortalPage } from '../pages/ClientPortalPage'
 import type { UserRole } from '../types/database'
@@ -11,11 +12,7 @@ export function ProtectedRoute({ roles }: Props) {
   const { session, profile, profileError, loading, refreshProfile, signOut } = useAuth()
 
   if (loading) {
-    return (
-      <div className="flex min-h-full items-center justify-center text-lg font-semibold">
-        Cargando…
-      </div>
-    )
+    return <FullScreenLoader />
   }
 
   if (!session) return <Navigate to="/login" replace />
@@ -39,11 +36,7 @@ export function ProtectedRoute({ roles }: Props) {
         </div>
       )
     }
-    return (
-      <div className="flex min-h-full items-center justify-center text-lg font-semibold">
-        Cargando…
-      </div>
-    )
+    return <FullScreenLoader />
   }
 
   if (!profile.active) {

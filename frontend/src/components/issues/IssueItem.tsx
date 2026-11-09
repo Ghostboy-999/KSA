@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { BusyLabel } from '../ui/Loading'
+import { staggerStyle } from '../../lib/motion'
 import { Link } from 'react-router-dom'
 import { setIssueResolved } from '../../hooks/useIssues'
 import { ISSUE_TYPE_LABELS, type OrderIssue } from '../../types/database'
@@ -8,9 +10,10 @@ interface Props {
   canResolve: boolean
   showOrder?: boolean
   onChanged?: () => void
+  index?: number
 }
 
-export function IssueItem({ issue, canResolve, showOrder, onChanged }: Props) {
+export function IssueItem({ issue, canResolve, showOrder, onChanged, index = 0 }: Props) {
   const [resolution, setResolution] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
@@ -30,7 +33,8 @@ export function IssueItem({ issue, canResolve, showOrder, onChanged }: Props) {
 
   return (
     <li
-      className={`rounded-lg border-l-4 px-3 py-2 ${open ? 'border-danger bg-red-50' : 'border-ksa-green bg-steel-100'}`}
+      style={staggerStyle(index)}
+      className={`stagger rounded-lg border-l-4 px-3 py-2 transition-colors duration-500 ${open ? 'border-danger bg-red-50' : 'border-ksa-green bg-steel-100'}`}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="font-semibold">
@@ -78,7 +82,7 @@ export function IssueItem({ issue, canResolve, showOrder, onChanged }: Props) {
             disabled={busy}
             onClick={() => void toggle(true)}
           >
-            Marcar resuelto
+            <BusyLabel busy={busy} busyText="Guardando…">Marcar resuelto</BusyLabel>
           </button>
         </div>
       )}
@@ -89,7 +93,7 @@ export function IssueItem({ issue, canResolve, showOrder, onChanged }: Props) {
           disabled={busy}
           onClick={() => void toggle(false)}
         >
-          Reabrir
+          <BusyLabel busy={busy} busyText="Reabriendo…">Reabrir</BusyLabel>
         </button>
       )}
       {err && <p className="mt-1 text-sm text-danger">{err}</p>}

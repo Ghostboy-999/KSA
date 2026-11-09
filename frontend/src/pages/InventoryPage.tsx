@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from 'react'
+import { Skeleton } from '../components/ui/Loading'
+import { staggerStyle } from '../lib/motion'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useInventory } from '../hooks/useInventory'
@@ -35,13 +37,20 @@ export function InventoryPage() {
       </div>
 
       {msg && (
-        <p className="rounded-lg bg-white px-3 py-2 text-sm font-medium shadow">{msg}</p>
+        <p key={msg} className="anim-slide-down rounded-lg bg-white px-3 py-2 text-sm font-medium shadow" role="status">{msg}</p>
       )}
       {error && <p className="text-danger">{error}</p>}
-      {loading && <p>Cargando…</p>}
+      {loading && materials.length === 0 && (
+        <div className="space-y-2 rounded-xl bg-white p-4 shadow" role="status" aria-label="Cargando inventario">
+          <Skeleton className="h-8 w-full" />
+          {Array.from({ length: 5 }, (_, i) => (
+            <Skeleton key={i} className="h-6 w-full" />
+          ))}
+        </div>
+      )}
 
       {shortages.length > 0 && (
-        <section className="rounded-xl border-2 border-danger bg-red-50 p-4">
+        <section className="anim-slide-down rounded-xl border-2 border-danger bg-red-50 p-4">
           <h3 className="mb-2 text-lg font-bold text-danger">
             Faltantes en órdenes activas
           </h3>
@@ -65,7 +74,7 @@ export function InventoryPage() {
       )}
 
       {belowMin.length > 0 && (
-        <section className="rounded-xl border-2 border-warn bg-ksa-yellow-soft p-4">
+        <section className="anim-slide-down rounded-xl border-2 border-warn bg-ksa-yellow-soft p-4">
           <h3 className="mb-2 text-lg font-bold text-warn">
             Bajo mínimo de reposición
           </h3>
@@ -91,12 +100,13 @@ export function InventoryPage() {
             </tr>
           </thead>
           <tbody>
-            {materials.map((m) => {
+            {materials.map((m, i) => {
               const low = Number(m.stock_qty) < Number(m.min_stock)
               return (
                 <tr
                   key={m.id}
-                  className={`border-b border-steel-200 ${low ? 'bg-ksa-yellow-soft' : ''}`}
+                  style={staggerStyle(i)}
+                  className={`stagger border-b border-steel-200 transition-colors hover:bg-steel-100 ${low ? 'bg-ksa-yellow-soft' : ''}`}
                 >
                   <td className="px-3 py-3 font-semibold">{m.name}</td>
                   <td className="px-3 py-3 font-mono">{m.grade}</td>

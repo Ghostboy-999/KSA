@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { BusyLabel } from '../ui/Loading'
 import { reportIssue } from '../../hooks/useIssues'
 import { ISSUE_TYPES, ISSUE_TYPE_LABELS, type IssueType } from '../../types/database'
 
@@ -44,13 +45,13 @@ export function IssueReportForm({ orderId, onReported }: Props) {
         >
           ⚠ Reportar inconveniente
         </button>
-        {msg && <p className="text-sm font-medium text-ksa-green">{msg}</p>}
+        {msg && <p className="anim-slide-down text-sm font-medium text-ksa-green" role="status">{msg}</p>}
       </div>
     )
   }
 
   return (
-    <form onSubmit={submit} className="space-y-2">
+    <form onSubmit={submit} className="anim-fade-up space-y-2">
       <label className="block text-sm font-semibold" htmlFor="issue-type">
         ¿Qué pasó?
       </label>
@@ -79,7 +80,7 @@ export function IssueReportForm({ orderId, onReported }: Props) {
           Cancelar
         </button>
         <button type="submit" className="btn-touch btn-danger flex-[1.4]" disabled={busy}>
-          {busy ? 'Enviando…' : 'Enviar reporte'}
+          <BusyLabel busy={busy} busyText="Enviando…">Enviar reporte</BusyLabel>
         </button>
       </div>
       {msg && <p className="text-sm text-danger">{msg}</p>}
