@@ -101,3 +101,230 @@ body {
     var(--color-ksa-black) 58px 66px
   );
 }
+
+/* ===================== Movimiento ===================== */
+
+.btn-touch {
+  transition:
+    transform 120ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.btn-touch:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+.btn-touch:not(:disabled):hover {
+  box-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.35);
+}
+
+.btn-touch:disabled {
+  cursor: progress;
+}
+
+/* Tarjetas que se elevan al pasar el puntero */
+.card-lift {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+@media (hover: hover) {
+  .card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -12px rgb(0 0 0 / 0.35);
+  }
+}
+
+@keyframes ksa-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ksa-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ksa-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ksa-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ksa-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes ksa-stripe-move {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 132px 0;
+  }
+}
+
+@keyframes ksa-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ksa-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes ksa-alert-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(220 38 38 / 0);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(220 38 38 / 0.15);
+  }
+}
+
+@keyframes ksa-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.anim-fade-up {
+  animation: ksa-fade-up 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.anim-fade-in {
+  animation: ksa-fade-in 400ms ease both;
+}
+
+.anim-slide-down {
+  animation: ksa-slide-down 280ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.anim-pop {
+  animation: ksa-pop 360ms ease;
+}
+
+.anim-alert {
+  animation:
+    ksa-slide-down 280ms cubic-bezier(0.2, 0.7, 0.2, 1) both,
+    ksa-alert-glow 2.4s ease-in-out 400ms infinite;
+}
+
+/* Aparición en cascada: style={{ '--i': n }} en cada elemento */
+.stagger {
+  animation: ksa-fade-up 340ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 45ms);
+}
+
+/* Segmentos de la barra de progreso del cliente */
+.grow-x {
+  transform-origin: left;
+  animation: ksa-grow-x 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 150ms);
+}
+
+/* Esqueletos de carga */
+.skeleton {
+  border-radius: 0.5rem;
+  background: linear-gradient(
+    90deg,
+    var(--color-steel-200) 0%,
+    #f0f0f0 40%,
+    var(--color-steel-200) 80%
+  );
+  background-size: 200% 100%;
+  animation: ksa-shimmer 1.4s linear infinite;
+}
+
+/* Franja de seguridad en movimiento (barra de carga) */
+.hazard-loader {
+  height: 0.6rem;
+  border-radius: 999px;
+  background: repeating-linear-gradient(
+    -55deg,
+    var(--color-ksa-yellow) 0 14px,
+    var(--color-ksa-black) 14px 22px,
+    var(--color-ksa-yellow) 22px 36px,
+    var(--color-ksa-black) 36px 44px,
+    var(--color-ksa-green) 44px 58px,
+    var(--color-ksa-black) 58px 66px
+  );
+  background-size: 132px 100%;
+  animation: ksa-stripe-move 900ms linear infinite;
+}
+
+.logo-breathe {
+  animation: ksa-breathe 1.8s ease-in-out infinite;
+}
+
+.spinner {
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 999px;
+  border: 0.18em solid currentColor;
+  border-right-color: transparent;
+  vertical-align: -0.2em;
+  animation: ksa-spin 700ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
+}

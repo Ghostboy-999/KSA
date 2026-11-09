@@ -15,6 +15,8 @@ interface AuthState {
   session: Session | null
   user: User | null
   profile: Profile | null
+  /** El perfil no se pudo cargar (error de red o de permisos), no que esté inactivo */
+  profileError: boolean
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
@@ -41,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [profileError, setProfileError] = useState(false)
 
   const refreshProfile = useCallback(async () => {
     if (!session?.user) {
@@ -49,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const p = await fetchProfile(session.user.id)
     setProfile(p)
+    setProfileError(!p)
   }, [session?.user])
 
   useEffect(() => {
@@ -58,7 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!mounted) return
       setSession(data.session)
       if (data.session?.user) {
-        setProfile(await fetchProfile(data.session.user.id))
+        const p = await fetchProfile(data.session.user.id)
+        setProfile(p)
+        setProfileError(!p)
       }
       setLoading(false)
     })
@@ -66,9 +72,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
       setSession(next)
       if (next?.user) {
-        void fetchProfile(next.user.id).then(setProfile)
+        const uid = next.user.id
+        // Fuera del callback: supabase-js recomienda no llamar a la API dentro de él
+        setTimeout(() => {
+          void fetchProfile(uid).then((p) => {
+            setProfile(p)
+            setProfileError(!p)
+          })
+        }, 0)
       } else {
         setProfile(null)
+        setProfileError(false)
       }
       setLoading(false)
     })
@@ -94,12 +108,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       user: session?.user ?? null,
       profile,
+      profileError,
       loading,
       signIn,
       signOut,
       refreshProfile,
     }),
-    [session, profile, loading, signIn, signOut, refreshProfile],
+    [session, profile, profileError, loading, signIn, signOut, refreshProfile],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

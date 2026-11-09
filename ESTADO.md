@@ -2,7 +2,7 @@
 
 **Fecha:** 9 nov 2026  
 **Versión app:** 0.1.0  
-**Fase actual:** Fase 1 completa y desplegada en https://ksa-taller.vercel.app; portal de clientes (Fase 3) iniciado  
+**Fase actual:** Fase 1 completa y desplegada en https://ksa-taller.vercel.app; portal de clientes (Fase 3) desplegado, pendiente de configurar Auth/SMTP en Supabase  
 **Estructura:** monorepo `backend/` + `frontend/`
 
 ---
@@ -32,13 +32,14 @@ KSA/
 | Frontend React + Vite + TS + Tailwind + PWA | Hecho (en `frontend/`) |
 | Migraciones SQL Supabase | 001–008 aplicadas en `eylefnchunsywabgdzhy` |
 | Inconvenientes por orden (reportar / resolver / aviso a gerencia) | Hecho (9 nov) |
-| Portal de clientes: registro, mis órdenes, solicitudes con fotos; gerencia las convierte en orden | Hecho en código (9 nov); falta configurar Auth/SMTP en Supabase |
+| Portal de clientes: registro, mis órdenes, solicitudes con fotos; gerencia las convierte en orden | Desplegado (9 nov, PR #6); no funciona para clientes hasta configurar Auth/SMTP en Supabase |
 | Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov tras pausa por inactividad del plan gratuito) |
 | `backend/setup_completo.sql` | Hecho |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
-| Usuarios Auth + roles | Admin `davidcopete123@gmail.com` (David Torres) creado |
-| Deploy Vercel (proyecto `ksa-taller`, root dir = `frontend`) | Hecho — https://ksa-taller.vercel.app, se despliega solo al fusionar en `main` |
-| Fase 2 / 3 | No iniciadas |
+| Usuarios Auth + roles | Una sola cuenta: admin `davidcopete123@gmail.com` (David Torres). El 9 nov quedó como `gerente` sin ningún admin; se restauró `admin` desde SQL. Mantener siempre al menos un admin |
+| Deploy Vercel (proyecto `ksa-taller`, root dir = `frontend`) | Hecho — https://ksa-taller.vercel.app, se despliega solo al fusionar en `main`; protección estándar (producción abierta, vistas previas con login de Vercel) |
+| Fase 2 | No iniciada |
+| Fase 3 | Portal de clientes hecho; WhatsApp y cotizaciones sin iniciar |
 
 ---
 
@@ -46,7 +47,7 @@ KSA/
 
 - **Frontend:** React 19, Vite 8, TypeScript, Tailwind 4, react-router-dom, supabase-js, vite-plugin-pwa
 - **Backend:** Supabase (Auth, Postgres, RLS, Realtime, Storage)
-- **Roles Fase 1:** `admin`, `gerente`, `trabajador`, `cliente`
+- **Roles:** `admin`, `gerente`, `trabajador` (equipo) y `cliente` (se registra solo; rol por defecto de toda cuenta nueva)
 
 ---
 
@@ -76,7 +77,7 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 
 ### Datos actuales (9 nov 2026)
 
-1 perfil (admin), 4 materiales (seed de aceros), 0 órdenes, 0 clientes.
+1 perfil (admin), 4 materiales (seed de aceros), 0 órdenes, 0 clientes, 0 solicitudes, 0 inconvenientes.
 
 ---
 
@@ -91,7 +92,7 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 
 ### Calidad del código (9 nov 2026)
 
-- `npm run build` OK; aviso de bundle JS de 504 kB (conviene code-splitting por ruta).
+- `npm run build` OK; aviso de bundle JS de 532 kB (conviene code-splitting por ruta).
 - `npm run lint`: 0 errores, 11 avisos (`set-state-in-effect`, memoización del React Compiler, `exhaustive-deps` en `OrderDetailPage`).
 - Sin tests.
 
@@ -110,4 +111,15 @@ npm run build
 ## Fases siguientes
 
 **Fase 2:** calidad, reprocesos, garantía, indicadores.  
-**Fase 3:** WhatsApp (Edge Functions), vista cliente, cotizaciones.
+**Fase 3:** WhatsApp (Edge Functions), cotizaciones (vista cliente ya hecha).
+
+### Propuesta *Ideas_KSA* (orden acordado)
+
+1. ~~Inconvenientes~~ — hecho.
+2. Campos que faltan: fechas de recepción e inicio, unidades y precio de venta en la orden; código, precio unitario y ubicación del material.
+3. Panel del CEO: órdenes activas/retrasadas, alertas, ingresos frente a costo de materiales.
+4. Control de tiempo: iniciar / pausar / finalizar e historial del trabajador.
+5. Reportes PDF/Excel y métricas.
+6. Cronograma y proveedores con pedidos.
+
+Decisiones pendientes antes del punto 2: cómo registrar ingresos (solo precio de venta o también abonos/saldo), cómo calcular la mano de obra (horas × tarifa o valor fijo) y si un inconveniente pausa la orden.

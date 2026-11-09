@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { staggerStyle } from '../lib/motion'
 import { supabase } from '../lib/supabase'
 import { ROLE_LABELS, type Profile, type UserRole } from '../types/database'
 
@@ -54,14 +55,15 @@ where id = (select id from auth.users where email = 'su@correo.com');`}
         </pre>
       </div>
 
-      {msg && <p className="rounded bg-white px-3 py-2 text-sm shadow">{msg}</p>}
+      {msg && <p key={msg} className="anim-slide-down rounded bg-white px-3 py-2 text-sm shadow" role="status">{msg}</p>}
       {error && <p className="text-danger">{error}</p>}
 
       <ul className="space-y-3">
-        {profiles.map((p) => (
+        {profiles.map((p, i) => (
           <li
             key={p.id}
-            className="flex flex-col gap-2 rounded-xl bg-white p-4 shadow sm:flex-row sm:items-center sm:justify-between"
+            style={staggerStyle(i)}
+            className="stagger card-lift flex flex-col gap-2 rounded-xl bg-white p-4 shadow sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
               <p className="font-bold">{p.full_name}</p>

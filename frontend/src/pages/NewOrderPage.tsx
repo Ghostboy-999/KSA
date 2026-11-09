@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { BusyLabel } from '../components/ui/Loading'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { updateRequestStatus } from '../hooks/useClientRequests'
@@ -225,10 +226,10 @@ export function NewOrderPage() {
         </select>
       </label>
 
-      {error && <p className="text-danger">{error}</p>}
+      {error && <p key={error} className="anim-slide-down text-danger" role="alert">{error}</p>}
 
       <button type="submit" className="btn-touch btn-primary w-full" disabled={saving}>
-        {saving ? 'Guardando…' : 'Crear orden'}
+        <BusyLabel busy={saving} busyText="Guardando…">Crear orden</BusyLabel>
       </button>
     </form>
   )

@@ -15,7 +15,8 @@ export function AppShell() {
   const isManager = profile?.role === 'admin' || profile?.role === 'gerente'
   const isAdmin = profile?.role === 'admin'
   const { issues: openIssues } = useIssues({ enabled: isManager })
-  const onIssuesPage = useLocation().pathname === '/inconvenientes'
+  const { pathname } = useLocation()
+  const onIssuesPage = pathname === '/inconvenientes'
   const { requests: openRequests } = useClientRequests({ onlyOpen: true, enabled: isManager })
 
   return (
@@ -62,12 +63,22 @@ export function AppShell() {
           )}
           {isManager && (
             <NavLink to="/inconvenientes" className={linkClass}>
-              Inconvenientes{openIssues.length > 0 && ` (${openIssues.length})`}
+              Inconvenientes
+              {openIssues.length > 0 && (
+                <span key={openIssues.length} className="anim-pop ml-1 inline-block">
+                  ({openIssues.length})
+                </span>
+              )}
             </NavLink>
           )}
           {isManager && (
             <NavLink to="/solicitudes" className={linkClass}>
-              Solicitudes{openRequests.length > 0 && ` (${openRequests.length})`}
+              Solicitudes
+              {openRequests.length > 0 && (
+                <span key={openRequests.length} className="anim-pop ml-1 inline-block">
+                  ({openRequests.length})
+                </span>
+              )}
             </NavLink>
           )}
           {isAdmin && (
@@ -85,7 +96,7 @@ export function AppShell() {
         {isManager && !onIssuesPage && openIssues.length > 0 && (
           <Link
             to="/inconvenientes"
-            className="mb-4 flex items-center justify-between gap-3 rounded-xl border-2 border-danger bg-red-50 px-4 py-3 font-semibold text-danger"
+            className="anim-alert mb-4 flex items-center justify-between gap-3 rounded-xl border-2 border-danger bg-red-50 px-4 py-3 font-semibold text-danger"
             role="alert"
           >
             <span>
@@ -96,7 +107,9 @@ export function AppShell() {
             <span className="shrink-0 underline">Ver</span>
           </Link>
         )}
-        <Outlet />
+        <div key={pathname} className="anim-fade-up">
+          <Outlet />
+        </div>
       </main>
     </div>
   )

@@ -1,4 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Skeleton, SkeletonList } from '../components/ui/Loading'
+import { staggerStyle } from '../lib/motion'
 import { Link, useParams } from 'react-router-dom'
 import { IssueItem } from '../components/issues/IssueItem'
 import { IssueReportForm } from '../components/issues/IssueReportForm'
@@ -111,7 +113,23 @@ export function OrderDetailPage() {
     await load()
   }
 
-  if (loading) return <p>Cargando…</p>
+  // Solo la primera carga muestra esqueleto; las recargas no hacen parpadear la página
+  if (loading && !order)
+    return (
+      <div className="space-y-5" role="status" aria-label="Cargando orden">
+        <Skeleton className="h-12 w-32" />
+        <div className="space-y-3 rounded-xl border-2 border-steel-200 bg-white p-4">
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-7 w-2/3" />
+          <Skeleton className="h-4 w-full" />
+          <div className="flex gap-2">
+            <Skeleton className="h-7 w-20" />
+            <Skeleton className="h-7 w-16" />
+          </div>
+        </div>
+        <SkeletonList count={3} />
+      </div>
+    )
   if (!order) return <p>Orden no encontrada.</p>
 
   return (
@@ -120,7 +138,7 @@ export function OrderDetailPage() {
         ← Tablero
       </Link>
 
-      <header className="rounded-xl border-2 border-steel-700 bg-white p-4">
+      <header className="anim-fade-up rounded-xl border-2 border-steel-700 bg-white p-4">
         <p className="font-mono text-sm font-bold">{order.code}</p>
         <h2 className="text-2xl font-bold">{order.clients?.name}</h2>
         <p className="mt-1 text-steel-700">{order.description}</p>
@@ -140,10 +158,10 @@ export function OrderDetailPage() {
       </header>
 
       {msg && (
-        <p className="rounded-lg bg-white px-3 py-2 text-sm font-medium shadow">{msg}</p>
+        <p key={msg} className="anim-slide-down rounded-lg bg-white px-3 py-2 text-sm font-medium shadow" role="status">{msg}</p>
       )}
 
-      <section className="rounded-xl bg-white p-4 shadow">
+      <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(1)}>
         <h3 className="mb-3 text-lg font-bold">
           Inconvenientes
           {openIssues > 0 && (
@@ -168,7 +186,7 @@ export function OrderDetailPage() {
       </section>
 
       {isManager && (
-        <section className="rounded-xl bg-white p-4 shadow">
+        <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(2)}>
           <h3 className="mb-2 text-lg font-bold">Asignar responsable</h3>
           <select
             className="btn-touch w-full border-2 border-steel-400 bg-white text-left"
@@ -185,7 +203,7 @@ export function OrderDetailPage() {
         </section>
       )}
 
-      <section className="rounded-xl bg-white p-4 shadow">
+      <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(3)}>
         <h3 className="mb-3 text-lg font-bold">Materiales de la orden</h3>
         <ul className="mb-4 space-y-2">
           {orderMats.map((om) => {
@@ -242,7 +260,7 @@ export function OrderDetailPage() {
         )}
       </section>
 
-      <section className="rounded-xl bg-white p-4 shadow">
+      <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(4)}>
         <h3 className="mb-2 text-lg font-bold">Foto inicial (opcional)</h3>
         {order.photo_url && (
           <img
@@ -263,7 +281,7 @@ export function OrderDetailPage() {
         />
       </section>
 
-      <section className="rounded-xl bg-white p-4 shadow">
+      <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(5)}>
         <h3 className="mb-3 text-lg font-bold">Historial</h3>
         <ul className="space-y-2 text-sm">
           {events.map((ev) => (

@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { KanbanSkeleton, SkeletonList } from '../components/ui/Loading'
+import { staggerStyle } from '../lib/motion'
 import { KanbanBoard } from '../components/orders/KanbanBoard'
 import { OrderCard } from '../components/orders/OrderCard'
 import { useAuth } from '../contexts/AuthContext'
@@ -57,7 +59,7 @@ export function BoardPage() {
           </h2>
           <p className="text-steel-600">
             Carga en taller:{' '}
-            <strong className="text-steel-900">{load.total}</strong> activas
+            <strong key={load.total} className="anim-pop inline-block text-steel-900">{load.total}</strong> activas
             {load.byStage.en_taller != null && (
               <> · {load.byStage.en_taller} en piso</>
             )}
@@ -83,12 +85,12 @@ export function BoardPage() {
       </div>
 
       {toast && (
-        <div className="rounded-xl border-2 border-steel-700 bg-white px-4 py-3 text-sm font-medium">
+        <div key={toast} className="anim-slide-down rounded-xl border-2 border-steel-700 bg-white px-4 py-3 text-sm font-medium" role="status">
           {toast}
         </div>
       )}
 
-      {loading && <p className="text-lg">Cargando órdenes…</p>}
+      {loading && (view === 'kanban' ? <KanbanSkeleton /> : <SkeletonList count={4} />)}
       {error && <p className="text-danger">{error}</p>}
 
       {!loading && view === 'kanban' && (
@@ -97,13 +99,10 @@ export function BoardPage() {
 
       {!loading && view === 'lista' && (
         <div className="grid gap-3 sm:grid-cols-2">
-          {orders.map((order) => (
-            <OrderCard
-              key={order.id}
-              order={order}
-              onAdvance={advance}
-              busy={busyId === order.id}
-            />
+          {orders.map((order, i) => (
+            <div key={order.id} className="stagger" style={staggerStyle(i)}>
+              <OrderCard order={order} onAdvance={advance} busy={busyId === order.id} />
+            </div>
           ))}
           {orders.length === 0 && (
             <p className="text-steel-600">No hay órdenes activas.</p>
