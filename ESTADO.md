@@ -36,7 +36,7 @@ KSA/
 | Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov tras pausa por inactividad del plan gratuito) |
 | `backend/setup_completo.sql` | Hecho |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
-| Usuarios Auth + roles | Una sola cuenta: `davidcopete123@gmail.com` (David Torres), hoy con rol **gerente** — no queda ningún admin (ver Pendiente) |
+| Usuarios Auth + roles | Una sola cuenta: admin `davidcopete123@gmail.com` (David Torres). El 9 nov quedó como `gerente` sin ningún admin; se restauró `admin` desde SQL. Mantener siempre al menos un admin |
 | Deploy Vercel (proyecto `ksa-taller`, root dir = `frontend`) | Hecho — https://ksa-taller.vercel.app, se despliega solo al fusionar en `main`; protección estándar (producción abierta, vistas previas con login de Vercel) |
 | Fase 2 | No iniciada |
 | Fase 3 | Portal de clientes hecho; WhatsApp y cotizaciones sin iniciar |
@@ -77,19 +77,18 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 
 ### Datos actuales (9 nov 2026)
 
-1 perfil (gerente), 4 materiales (seed de aceros), 0 órdenes, 0 clientes, 0 solicitudes, 0 inconvenientes.
+1 perfil (admin), 4 materiales (seed de aceros), 0 órdenes, 0 clientes, 0 solicitudes, 0 inconvenientes.
 
 ---
 
 ## Pendiente inmediato
 
-1. Devolver el rol `admin` a `davidcopete123@gmail.com`: sin admin nadie ve la pantalla Usuarios ni puede cambiar roles. Solo se puede desde el SQL Editor (ver `backend/README.md`, "Promover admin").
-2. Supabase Auth para el portal de clientes: activar *Allow new users to sign up*, dejar *Confirm email* activado, *Site URL* = `https://ksa-taller.vercel.app` y configurar SMTP propio (ver `backend/README.md`).
-3. Crear al resto del equipo desde Authentication (entran como `cliente`) y subirles el rol en la pantalla Usuarios.
-4. Activar *Leaked password protection* en Authentication (aviso del advisor).
-5. Probar en producción: login, inconvenientes en tiempo real, registro de cliente y solicitud con fotos.
-6. Revisar la función `rls_auto_enable` (no viene de nuestras migraciones; `anon` puede ejecutarla).
-7. Plan gratuito de Supabase: el proyecto se pausa tras ~1 semana sin uso.
+1. Supabase Auth para el portal de clientes: activar *Allow new users to sign up*, dejar *Confirm email* activado, *Site URL* = `https://ksa-taller.vercel.app` y configurar SMTP propio (ver `backend/README.md`).
+2. Crear al resto del equipo desde Authentication (entran como `cliente`) y subirles el rol en la pantalla Usuarios.
+3. Activar *Leaked password protection* en Authentication (aviso del advisor).
+4. Probar en producción: login, inconvenientes en tiempo real, registro de cliente y solicitud con fotos.
+5. Revisar la función `rls_auto_enable` (no viene de nuestras migraciones; `anon` puede ejecutarla).
+6. Plan gratuito de Supabase: el proyecto se pausa tras ~1 semana sin uso.
 
 ### Calidad del código (9 nov 2026)
 
