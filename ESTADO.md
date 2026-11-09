@@ -1,8 +1,8 @@
 # ESTADO del proyecto — KSA Taller
 
-**Fecha:** 26 oct 2026  
+**Fecha:** 9 nov 2026  
 **Versión app:** 0.1.0  
-**Fase actual:** Fase 1 (tablero + inventario) — código listo; conectando Supabase (`eylefnchunsywabgdzhy`)  
+**Fase actual:** Fase 1 (tablero + inventario) — código listo y Supabase (`eylefnchunsywabgdzhy`) conectado; falta deploy  
 **Estructura:** monorepo `backend/` + `frontend/`
 
 ---
@@ -12,7 +12,8 @@
 ```text
 KSA/
 ├── backend/
-│   ├── migrations/     # 001–004 SQL Supabase
+│   ├── migrations/     # 001–006 SQL Supabase
+│   ├── setup_completo.sql  # 001–006 concatenadas (proyecto vacío)
 │   └── README.md
 ├── frontend/           # App Vite React (src, public, package.json…)
 │   └── README.md
@@ -30,7 +31,8 @@ KSA/
 | Identidad visual (logo, colores negro/amarillo/verde, iconos PWA) | Hecho |
 | Frontend React + Vite + TS + Tailwind + PWA | Hecho (en `frontend/`) |
 | Migraciones SQL Supabase | 001–006 aplicadas en `eylefnchunsywabgdzhy` |
-| Proyecto Supabase | `eylefnchunsywabgdzhy` |
+| Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov tras pausa por inactividad del plan gratuito) |
+| `backend/setup_completo.sql` | Hecho |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
 | Usuarios Auth + roles | Admin `davidcopete123@gmail.com` (David Torres) creado |
 | Deploy Vercel (root dir = `frontend`) | Pendiente |
@@ -63,6 +65,13 @@ KSA/
 5. `005_security_fixes.sql` — evita que un usuario se haga admin solo; vistas respetan RLS
 6. `006_function_privileges.sql` — funciones internas fuera de la API pública
 
+`setup_completo.sql` concatena 001–006 para instalar en un proyecto vacío.
+En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen en el historial de migraciones de Supabase, pero sus cambios están verificados en la base.
+
+### Datos actuales (9 nov 2026)
+
+1 perfil (admin), 4 materiales (seed de aceros), 0 órdenes, 0 clientes.
+
 ---
 
 ## Pendiente inmediato
@@ -71,6 +80,14 @@ KSA/
 2. Activar *Leaked password protection* en Authentication (aviso del advisor).
 3. `cd frontend && npm run dev`
 4. Vercel: Root Directory = `frontend`.
+5. Revisar la función `rls_auto_enable` (no viene de nuestras migraciones; `anon` puede ejecutarla).
+6. Plan gratuito de Supabase: el proyecto se pausa tras ~1 semana sin uso.
+
+### Calidad del código (9 nov 2026)
+
+- `npm run build` OK; aviso de bundle JS de 504 kB (conviene code-splitting por ruta).
+- `npm run lint`: 0 errores, 8 avisos (`set-state-in-effect`, memoización del React Compiler, `exhaustive-deps` en `OrderDetailPage`).
+- Sin tests.
 
 ---
 
