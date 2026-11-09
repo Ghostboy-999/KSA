@@ -1,8 +1,9 @@
--- KSA Taller — Instalación completa (migraciones 001 a 006)
--- Generado a partir de backend/migrations/. Pegar entero en Supabase → SQL Editor → Run, una sola vez.
+-- setup_completo.sql — KSA Taller
+-- Concatenación de migrations/001–006 en orden. Ejecutar una sola vez en un proyecto vacío.
+-- Generado con: cat migrations/00*.sql (no editar a mano; regenerar si cambia una migración).
 
 -- ============================================================
--- 001_schema.sql
+-- migrations/001_schema.sql
 -- ============================================================
 -- KSA Taller — Esquema Fase 1
 -- Ejecutar en Supabase SQL Editor (en orden: 001 → 002 → 003 → 004)
@@ -128,8 +129,9 @@ insert into storage.buckets (id, name, public)
 values ('order-photos', 'order-photos', true)
 on conflict (id) do nothing;
 
+
 -- ============================================================
--- 002_rls.sql
+-- migrations/002_rls.sql
 -- ============================================================
 -- KSA Taller — Row Level Security por rol
 
@@ -333,8 +335,9 @@ create policy "order_photos_update_staff"
   on storage.objects for update to authenticated
   using (bucket_id = 'order-photos' and public.is_staff());
 
+
 -- ============================================================
--- 003_triggers.sql
+-- migrations/003_triggers.sql
 -- ============================================================
 -- KSA Taller — Triggers: historial de etapas + stock
 
@@ -445,8 +448,9 @@ create trigger orders_block_en_taller
   before update of stage on public.orders
   for each row execute function public.prevent_en_taller_without_stock();
 
+
 -- ============================================================
--- 004_views_seed.sql
+-- migrations/004_views_seed.sql
 -- ============================================================
 -- KSA Taller — Vista de faltantes + datos semilla de aceros
 
@@ -512,8 +516,9 @@ cross join (
 where s.name = 'Aceros del Pacífico'
   and not exists (select 1 from public.materials m where m.grade = v.grade);
 
+
 -- ============================================================
--- 005_security_fixes.sql
+-- migrations/005_security_fixes.sql
 -- ============================================================
 -- KSA Taller — Correcciones de seguridad sobre 002 y 004
 
@@ -568,8 +573,9 @@ alter view public.materials_below_min set (security_invoker = true);
 -- 4. search_path fijo en la función de updated_at (alerta del advisor de Supabase).
 alter function public.set_updated_at() set search_path = public;
 
+
 -- ============================================================
--- 006_function_privileges.sql
+-- migrations/006_function_privileges.sql
 -- ============================================================
 -- KSA Taller — Quitar funciones internas de la API (/rest/v1/rpc/...)
 -- Supabase da EXECUTE a anon y authenticated en toda función nueva de public.
@@ -591,3 +597,4 @@ revoke execute on function public.is_manager() from public, anon;
 grant execute on function public.current_role() to authenticated;
 grant execute on function public.is_staff() to authenticated;
 grant execute on function public.is_manager() to authenticated;
+
