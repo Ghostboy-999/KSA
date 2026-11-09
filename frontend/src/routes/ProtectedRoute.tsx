@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { ClientPortalPage } from '../pages/ClientPortalPage'
 import type { UserRole } from '../types/database'
 
 interface Props {
@@ -28,17 +29,11 @@ export function ProtectedRoute({ roles }: Props) {
     )
   }
 
+  // Los clientes solo tienen su portal, en cualquier ruta
+  if (profile.role === 'cliente') return <ClientPortalPage />
+
   if (roles && !roles.includes(profile.role)) {
     return <Navigate to="/" replace />
-  }
-
-  if (profile.role === 'cliente') {
-    return (
-      <div className="mx-auto max-w-md p-6 text-center">
-        <h1 className="mb-2 text-xl font-bold">Vista cliente</h1>
-        <p>Disponible en una fase posterior (seguimiento de estado).</p>
-      </div>
-    )
   }
 
   return <Outlet />

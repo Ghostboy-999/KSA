@@ -6,7 +6,7 @@ Proyecto: `eylefnchunsywabgdzhy` — https://eylefnchunsywabgdzhy.supabase.co
 
 ## Instalación rápida
 
-Pega **todo** [`setup_completo.sql`](setup_completo.sql) en Supabase → **SQL Editor** → **Run**, una sola vez en un proyecto vacío. Contiene las migraciones 001–007 en orden.
+Pega **todo** [`setup_completo.sql`](setup_completo.sql) en Supabase → **SQL Editor** → **Run**, una sola vez en un proyecto vacío. Contiene las migraciones 001–008 en orden.
 
 ## Migraciones
 
@@ -19,15 +19,19 @@ Si prefieres aplicarlas una a una, **en este orden**:
 5. `migrations/005_security_fixes.sql` — rol fijo `trabajador` al registrarse, solo admin cambia rol/estado, vistas con `security_invoker`
 6. `migrations/006_function_privileges.sql` — las funciones de triggers y los helpers de RLS no se pueden llamar por `/rest/v1/rpc` (helpers solo para `authenticated`)
 7. `migrations/007_order_issues.sql` — inconvenientes por orden (`order_issues`): el equipo reporta, gerencia resuelve; Realtime activado
+8. `migrations/008_client_portal.sql` — portal de clientes: toda cuenta nueva entra como `cliente`, vínculo cuenta↔ficha por correo confirmado (`claim_client_account`), órdenes del cliente vía `client_orders()`, tabla `client_requests` y bucket privado `request-photos`
 
 Si cambias una migración, regenera `setup_completo.sql` (concatenación de `migrations/00*.sql`).
 
 ## Auth
 
 - Provider: Email / Password
-- Recomendado: desactivar **Allow new users to sign up** (Authentication → Sign In / Providers); los usuarios los crea el admin
-- Crear usuario: Authentication → Users → **Add user** → *Create new user*, marcando **Auto Confirm User**
-- El trigger crea `profiles` con rol `trabajador` (el rol enviado en metadata se ignora)
+- **Allow new users to sign up: activado** (los clientes se registran desde `/registro`)
+- **Confirm email: activado — obligatorio.** La cuenta de un cliente se une a su ficha por correo; sin confirmación, cualquiera podría registrarse con el correo de otro cliente y ver sus órdenes
+- URL Configuration: *Site URL* = `https://ksa-taller.vercel.app` (el enlace del correo de confirmación lleva ahí)
+- SMTP propio (Authentication → Emails → SMTP Settings): el correo por defecto de Supabase tiene un límite muy bajo y solo entrega a los miembros del equipo del proyecto; para clientes reales hace falta un proveedor (Resend, SendGrid, Brevo…)
+- El trigger crea `profiles` con rol `cliente` (el rol enviado en metadata se ignora)
+- Crear usuario del equipo: Authentication → Users → **Add user** → *Create new user*, marcando **Auto Confirm User**; luego el admin le cambia el rol en la pantalla Usuarios
 - Solo un admin puede cambiar `role` o `active`; desde el SQL Editor sí se puede, para el primer admin
 - Promover admin:
 
@@ -45,6 +49,6 @@ where id = (select id from auth.users where email = 'davidcopete123@gmail.com');
 
 ## Tablas
 
-`profiles`, `clients`, `suppliers`, `materials`, `orders`, `order_events`, `order_materials`, `stock_movements`, `order_issues`
+`profiles`, `clients`, `suppliers`, `materials`, `orders`, `order_events`, `order_materials`, `stock_movements`, `order_issues`, `client_requests`
 
 Vistas: `order_shortages`, `materials_below_min`

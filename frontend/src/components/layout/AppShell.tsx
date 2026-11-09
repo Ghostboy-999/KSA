@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { useClientRequests } from '../../hooks/useClientRequests'
 import { useIssues } from '../../hooks/useIssues'
 import { ROLE_LABELS } from '../../types/database'
 
@@ -15,6 +16,7 @@ export function AppShell() {
   const isAdmin = profile?.role === 'admin'
   const { issues: openIssues } = useIssues({ enabled: isManager })
   const onIssuesPage = useLocation().pathname === '/inconvenientes'
+  const { requests: openRequests } = useClientRequests({ onlyOpen: true, enabled: isManager })
 
   return (
     <div className="flex min-h-full flex-col bg-steel-100">
@@ -61,6 +63,11 @@ export function AppShell() {
           {isManager && (
             <NavLink to="/inconvenientes" className={linkClass}>
               Inconvenientes{openIssues.length > 0 && ` (${openIssues.length})`}
+            </NavLink>
+          )}
+          {isManager && (
+            <NavLink to="/solicitudes" className={linkClass}>
+              Solicitudes{openRequests.length > 0 && ` (${openRequests.length})`}
             </NavLink>
           )}
           {isAdmin && (

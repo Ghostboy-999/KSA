@@ -2,7 +2,7 @@
 
 **Fecha:** 9 nov 2026  
 **Versión app:** 0.1.0  
-**Fase actual:** Fase 1 (tablero + inventario) — código listo y Supabase (`eylefnchunsywabgdzhy`) conectado; falta deploy  
+**Fase actual:** Fase 1 completa y desplegada en https://ksa-taller.vercel.app; portal de clientes (Fase 3) iniciado  
 **Estructura:** monorepo `backend/` + `frontend/`
 
 ---
@@ -12,8 +12,8 @@
 ```text
 KSA/
 ├── backend/
-│   ├── migrations/     # 001–007 SQL Supabase
-│   ├── setup_completo.sql  # 001–007 concatenadas (proyecto vacío)
+│   ├── migrations/     # 001–008 SQL Supabase
+│   ├── setup_completo.sql  # 001–008 concatenadas (proyecto vacío)
 │   └── README.md
 ├── frontend/           # App Vite React (src, public, package.json…)
 │   └── README.md
@@ -30,13 +30,14 @@ KSA/
 | Separación backend / frontend | Hecho |
 | Identidad visual (logo, colores negro/amarillo/verde, iconos PWA) | Hecho |
 | Frontend React + Vite + TS + Tailwind + PWA | Hecho (en `frontend/`) |
-| Migraciones SQL Supabase | 001–007 aplicadas en `eylefnchunsywabgdzhy` |
+| Migraciones SQL Supabase | 001–008 aplicadas en `eylefnchunsywabgdzhy` |
 | Inconvenientes por orden (reportar / resolver / aviso a gerencia) | Hecho (9 nov) |
+| Portal de clientes: registro, mis órdenes, solicitudes con fotos; gerencia las convierte en orden | Hecho en código (9 nov); falta configurar Auth/SMTP en Supabase |
 | Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov tras pausa por inactividad del plan gratuito) |
 | `backend/setup_completo.sql` | Hecho |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
 | Usuarios Auth + roles | Admin `davidcopete123@gmail.com` (David Torres) creado |
-| Deploy Vercel (root dir = `frontend`) | Pendiente |
+| Deploy Vercel (proyecto `ksa-taller`, root dir = `frontend`) | Hecho — https://ksa-taller.vercel.app, se despliega solo al fusionar en `main` |
 | Fase 2 / 3 | No iniciadas |
 
 ---
@@ -54,6 +55,7 @@ KSA/
 ### Frontend (`frontend/src/`)
 
 - Login, shell por rol, tablero Kanban/lista, detalle OT, nueva OT, inventario, admin usuarios
+- Portal de clientes (`/registro`, portal en cualquier ruta para rol `cliente`) y página `/solicitudes` para gerencia; "Crear orden" desde una solicitud precarga la orden y la marca aceptada
 - Inconvenientes: botón "Reportar inconveniente" en cada orden, aviso arriba para gerencia/admin, insignia en las tarjetas del tablero y página `/inconvenientes` para resolver
 - Realtime, PWA, fotos opcionales
 - Marca KSA: logo en `public/logo-ksa.png`, favicon e iconos PWA generados del logo, paleta en `src/index.css` (`ksa-black`, `ksa-yellow` #FFE000, `ksa-green` #009A1E) y franja de seguridad `.hazard-stripe`
@@ -67,8 +69,9 @@ KSA/
 5. `005_security_fixes.sql` — evita que un usuario se haga admin solo; vistas respetan RLS
 6. `006_function_privileges.sql` — funciones internas fuera de la API pública
 7. `007_order_issues.sql` — inconvenientes por orden; el trabajador reporta, gerencia resuelve
+8. `008_client_portal.sql` — portal de clientes; **las cuentas nuevas entran como `cliente`** (el admin sube de rol al equipo)
 
-`setup_completo.sql` concatena 001–007 para instalar en un proyecto vacío.
+`setup_completo.sql` concatena 001–008 para instalar en un proyecto vacío.
 En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen en el historial de migraciones de Supabase, pero sus cambios están verificados en la base.
 
 ### Datos actuales (9 nov 2026)
@@ -79,17 +82,17 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 
 ## Pendiente inmediato
 
-1. Crear al resto del equipo desde Authentication (entran como `trabajador`) y asignar roles en la pantalla Usuarios.
-2. Activar *Leaked password protection* en Authentication (aviso del advisor).
-3. `cd frontend && npm run dev`
-4. Vercel: Root Directory = `frontend`.
+1. Supabase Auth para el portal de clientes: activar *Allow new users to sign up*, dejar *Confirm email* activado, *Site URL* = `https://ksa-taller.vercel.app` y configurar SMTP propio (ver `backend/README.md`).
+2. Crear al resto del equipo desde Authentication (entran como `cliente`) y subirles el rol en la pantalla Usuarios.
+3. Activar *Leaked password protection* en Authentication (aviso del advisor).
+4. Probar en producción: login, inconvenientes en tiempo real, registro de cliente y solicitud con fotos.
 5. Revisar la función `rls_auto_enable` (no viene de nuestras migraciones; `anon` puede ejecutarla).
 6. Plan gratuito de Supabase: el proyecto se pausa tras ~1 semana sin uso.
 
 ### Calidad del código (9 nov 2026)
 
 - `npm run build` OK; aviso de bundle JS de 504 kB (conviene code-splitting por ruta).
-- `npm run lint`: 0 errores, 8 avisos (`set-state-in-effect`, memoización del React Compiler, `exhaustive-deps` en `OrderDetailPage`).
+- `npm run lint`: 0 errores, 11 avisos (`set-state-in-effect`, memoización del React Compiler, `exhaustive-deps` en `OrderDetailPage`).
 - Sin tests.
 
 ---

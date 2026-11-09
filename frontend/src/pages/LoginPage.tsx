@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 export function LoginPage() {
@@ -16,7 +16,15 @@ export function LoginPage() {
     setSubmitting(true)
     setError(null)
     const { error: err } = await signIn(email.trim(), password)
-    if (err) setError(err)
+    if (err) {
+      setError(
+        /email not confirmed/i.test(err)
+          ? 'Confirma tu correo con el enlace que te enviamos antes de ingresar.'
+          : /invalid login credentials/i.test(err)
+            ? 'Correo o contraseña incorrectos.'
+            : err,
+      )
+    }
     setSubmitting(false)
   }
 
@@ -78,6 +86,13 @@ export function LoginPage() {
             >
               {submitting ? 'Entrando…' : 'Entrar'}
             </button>
+
+            <p className="mt-4 text-center text-sm">
+              ¿Eres cliente y no tienes cuenta?{' '}
+              <Link to="/registro" className="font-semibold underline">
+                Crear cuenta
+              </Link>
+            </p>
           </div>
         </form>
       </div>
