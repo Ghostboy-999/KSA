@@ -1,5 +1,6 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { useIssues } from '../../hooks/useIssues'
 import { ROLE_LABELS } from '../../types/database'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -12,6 +13,8 @@ export function AppShell() {
   const { profile, signOut } = useAuth()
   const isManager = profile?.role === 'admin' || profile?.role === 'gerente'
   const isAdmin = profile?.role === 'admin'
+  const { issues: openIssues } = useIssues({ enabled: isManager })
+  const onIssuesPage = useLocation().pathname === '/inconvenientes'
 
   return (
     <div className="flex min-h-full flex-col bg-steel-100">
@@ -55,6 +58,11 @@ export function AppShell() {
               Nueva OT
             </NavLink>
           )}
+          {isManager && (
+            <NavLink to="/inconvenientes" className={linkClass}>
+              Inconvenientes{openIssues.length > 0 && ` (${openIssues.length})`}
+            </NavLink>
+          )}
           {isAdmin && (
             <NavLink to="/usuarios" className={linkClass}>
               Usuarios
@@ -67,6 +75,20 @@ export function AppShell() {
       </nav>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-3 py-4 sm:px-4">
+        {isManager && !onIssuesPage && openIssues.length > 0 && (
+          <Link
+            to="/inconvenientes"
+            className="mb-4 flex items-center justify-between gap-3 rounded-xl border-2 border-danger bg-red-50 px-4 py-3 font-semibold text-danger"
+            role="alert"
+          >
+            <span>
+              ⚠ {openIssues.length === 1
+                ? `1 inconveniente abierto: ${openIssues[0].orders?.code ?? ''}`
+                : `${openIssues.length} inconvenientes abiertos`}
+            </span>
+            <span className="shrink-0 underline">Ver</span>
+          </Link>
+        )}
         <Outlet />
       </main>
     </div>

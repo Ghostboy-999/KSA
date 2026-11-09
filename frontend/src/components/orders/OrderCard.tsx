@@ -3,6 +3,7 @@ import {
   PRIORITY_LABELS,
   STAGE_LABELS,
   nextStage,
+  openIssueCount,
   type Order,
 } from '../../types/database'
 
@@ -21,6 +22,7 @@ interface Props {
 
 export function OrderCard({ order, onAdvance, busy }: Props) {
   const next = nextStage(order.stage)
+  const issues = openIssueCount(order)
 
   return (
     <article className="rounded-xl border-2 border-steel-700 bg-white p-3 shadow-sm">
@@ -39,6 +41,11 @@ export function OrderCard({ order, onAdvance, busy }: Props) {
       <p className="mb-2 line-clamp-2 text-sm text-steel-700">{order.description}</p>
 
       <div className="mb-3 flex flex-wrap gap-2 text-xs text-steel-600">
+        {issues > 0 && (
+          <span className="rounded bg-danger px-2 py-1 font-bold text-white">
+            ⚠ {issues} {issues === 1 ? 'inconveniente' : 'inconvenientes'}
+          </span>
+        )}
         <span className="rounded bg-steel-200 px-2 py-1">{STAGE_LABELS[order.stage]}</span>
         {order.due_date && (
           <span className="rounded bg-steel-200 px-2 py-1">

@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { AdminUsersPage } from './pages/AdminUsersPage'
 import { BoardPage } from './pages/BoardPage'
 import { InventoryPage } from './pages/InventoryPage'
+import { IssuesPage } from './pages/IssuesPage'
 import { LoginPage } from './pages/LoginPage'
 import { NewOrderPage } from './pages/NewOrderPage'
 import { OrderDetailPage } from './pages/OrderDetailPage'
@@ -23,6 +24,7 @@ export default function App() {
               <Route path="orden/:id" element={<OrderDetailPage />} />
               <Route element={<RoleGate roles={['admin', 'gerente']} />}>
                 <Route path="nueva-orden" element={<NewOrderPage />} />
+                <Route path="inconvenientes" element={<IssuesPage />} />
               </Route>
               <Route element={<RoleGate roles={['admin']} />}>
                 <Route path="usuarios" element={<AdminUsersPage />} />

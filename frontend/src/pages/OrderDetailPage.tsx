@@ -1,6 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { IssueItem } from '../components/issues/IssueItem'
+import { IssueReportForm } from '../components/issues/IssueReportForm'
 import { useAuth } from '../contexts/AuthContext'
+import { useIssues } from '../hooks/useIssues'
 import { supabase } from '../lib/supabase'
 import {
   PRIORITY_LABELS,
@@ -26,6 +29,8 @@ export function OrderDetailPage() {
   const [qty, setQty] = useState('1')
   const [msg, setMsg] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const { issues, reload: reloadIssues } = useIssues({ orderId: id, enabled: !!id })
+  const openIssues = issues.filter((i) => i.status === 'abierto').length
 
   async function load() {
     if (!id) return
@@ -137,6 +142,30 @@ export function OrderDetailPage() {
       {msg && (
         <p className="rounded-lg bg-white px-3 py-2 text-sm font-medium shadow">{msg}</p>
       )}
+
+      <section className="rounded-xl bg-white p-4 shadow">
+        <h3 className="mb-3 text-lg font-bold">
+          Inconvenientes
+          {openIssues > 0 && (
+            <span className="ml-2 rounded bg-danger px-2 py-0.5 text-sm text-white">
+              {openIssues} abierto{openIssues === 1 ? '' : 's'}
+            </span>
+          )}
+        </h3>
+        {issues.length > 0 && (
+          <ul className="mb-3 space-y-2">
+            {issues.map((i) => (
+              <IssueItem
+                key={i.id}
+                issue={i}
+                canResolve={isManager}
+                onChanged={() => void reloadIssues()}
+              />
+            ))}
+          </ul>
+        )}
+        <IssueReportForm orderId={order.id} onReported={() => void reloadIssues()} />
+      </section>
 
       {isManager && (
         <section className="rounded-xl bg-white p-4 shadow">
