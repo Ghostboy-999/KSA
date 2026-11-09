@@ -11,6 +11,16 @@ export type OrderStage =
 
 export type OrderPriority = 'baja' | 'media' | 'alta' | 'urgente'
 
+export type IssueType =
+  | 'falta_material'
+  | 'dano_maquinaria'
+  | 'problema_tecnico'
+  | 'error_medidas'
+  | 'retraso_externo'
+  | 'otro'
+
+export type IssueStatus = 'abierto' | 'resuelto'
+
 export interface Profile {
   id: string
   full_name: string
@@ -67,6 +77,23 @@ export interface Order {
   updated_at: string
   clients?: Pick<Client, 'name' | 'phone'> | null
   profiles?: Pick<Profile, 'full_name'> | null
+  order_issues?: Pick<OrderIssue, 'status'>[]
+}
+
+export interface OrderIssue {
+  id: string
+  order_id: string
+  type: IssueType
+  description: string
+  status: IssueStatus
+  reported_by: string | null
+  resolution: string | null
+  resolved_by: string | null
+  resolved_at: string | null
+  created_at: string
+  reporter?: Pick<Profile, 'full_name'> | null
+  resolver?: Pick<Profile, 'full_name'> | null
+  orders?: Pick<Order, 'code' | 'description'> | null
 }
 
 export interface OrderMaterial {
@@ -130,6 +157,28 @@ export const PRIORITY_LABELS: Record<OrderPriority, string> = {
   media: 'Media',
   alta: 'Alta',
   urgente: 'Urgente',
+}
+
+export const ISSUE_TYPES: IssueType[] = [
+  'falta_material',
+  'dano_maquinaria',
+  'problema_tecnico',
+  'error_medidas',
+  'retraso_externo',
+  'otro',
+]
+
+export const ISSUE_TYPE_LABELS: Record<IssueType, string> = {
+  falta_material: 'Falta de material',
+  dano_maquinaria: 'Daño de maquinaria',
+  problema_tecnico: 'Problema técnico',
+  error_medidas: 'Error en medidas o especificaciones',
+  retraso_externo: 'Retraso por causa externa',
+  otro: 'Otro',
+}
+
+export function openIssueCount(order: Pick<Order, 'order_issues'>): number {
+  return order.order_issues?.filter((i) => i.status === 'abierto').length ?? 0
 }
 
 export const ROLE_LABELS: Record<UserRole, string> = {

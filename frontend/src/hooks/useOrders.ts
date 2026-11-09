@@ -5,7 +5,8 @@ import type { Order, OrderStage } from '../types/database'
 const ORDER_SELECT = `
   *,
   clients ( name, phone ),
-  profiles:assignee_id ( full_name )
+  profiles:assignee_id ( full_name ),
+  order_issues ( status )
 `
 
 export function useOrders(filter?: { assigneeId?: string; activeOnly?: boolean }) {
@@ -50,6 +51,13 @@ export function useOrders(filter?: { assigneeId?: string; activeOnly?: boolean }
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },
+        () => {
+          void load()
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'order_issues' },
         () => {
           void load()
         },

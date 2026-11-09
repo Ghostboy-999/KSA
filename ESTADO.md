@@ -12,8 +12,8 @@
 ```text
 KSA/
 ├── backend/
-│   ├── migrations/     # 001–006 SQL Supabase
-│   ├── setup_completo.sql  # 001–006 concatenadas (proyecto vacío)
+│   ├── migrations/     # 001–007 SQL Supabase
+│   ├── setup_completo.sql  # 001–007 concatenadas (proyecto vacío)
 │   └── README.md
 ├── frontend/           # App Vite React (src, public, package.json…)
 │   └── README.md
@@ -30,7 +30,8 @@ KSA/
 | Separación backend / frontend | Hecho |
 | Identidad visual (logo, colores negro/amarillo/verde, iconos PWA) | Hecho |
 | Frontend React + Vite + TS + Tailwind + PWA | Hecho (en `frontend/`) |
-| Migraciones SQL Supabase | 001–006 aplicadas en `eylefnchunsywabgdzhy` |
+| Migraciones SQL Supabase | 001–007 aplicadas en `eylefnchunsywabgdzhy` |
+| Inconvenientes por orden (reportar / resolver / aviso a gerencia) | Hecho (9 nov) |
 | Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov tras pausa por inactividad del plan gratuito) |
 | `backend/setup_completo.sql` | Hecho |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
@@ -53,6 +54,7 @@ KSA/
 ### Frontend (`frontend/src/`)
 
 - Login, shell por rol, tablero Kanban/lista, detalle OT, nueva OT, inventario, admin usuarios
+- Inconvenientes: botón "Reportar inconveniente" en cada orden, aviso arriba para gerencia/admin, insignia en las tarjetas del tablero y página `/inconvenientes` para resolver
 - Realtime, PWA, fotos opcionales
 - Marca KSA: logo en `public/logo-ksa.png`, favicon e iconos PWA generados del logo, paleta en `src/index.css` (`ksa-black`, `ksa-yellow` #FFE000, `ksa-green` #009A1E) y franja de seguridad `.hazard-stripe`
 
@@ -64,8 +66,9 @@ KSA/
 4. `004_views_seed.sql`
 5. `005_security_fixes.sql` — evita que un usuario se haga admin solo; vistas respetan RLS
 6. `006_function_privileges.sql` — funciones internas fuera de la API pública
+7. `007_order_issues.sql` — inconvenientes por orden; el trabajador reporta, gerencia resuelve
 
-`setup_completo.sql` concatena 001–006 para instalar en un proyecto vacío.
+`setup_completo.sql` concatena 001–007 para instalar en un proyecto vacío.
 En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen en el historial de migraciones de Supabase, pero sus cambios están verificados en la base.
 
 ### Datos actuales (9 nov 2026)

@@ -6,7 +6,7 @@ Proyecto: `eylefnchunsywabgdzhy` — https://eylefnchunsywabgdzhy.supabase.co
 
 ## Instalación rápida
 
-Pega **todo** [`setup_completo.sql`](setup_completo.sql) en Supabase → **SQL Editor** → **Run**, una sola vez en un proyecto vacío. Contiene las migraciones 001–006 en orden.
+Pega **todo** [`setup_completo.sql`](setup_completo.sql) en Supabase → **SQL Editor** → **Run**, una sola vez en un proyecto vacío. Contiene las migraciones 001–007 en orden.
 
 ## Migraciones
 
@@ -18,6 +18,7 @@ Si prefieres aplicarlas una a una, **en este orden**:
 4. `migrations/004_views_seed.sql` — vistas de faltantes, Realtime, seed de aceros
 5. `migrations/005_security_fixes.sql` — rol fijo `trabajador` al registrarse, solo admin cambia rol/estado, vistas con `security_invoker`
 6. `migrations/006_function_privileges.sql` — las funciones de triggers y los helpers de RLS no se pueden llamar por `/rest/v1/rpc` (helpers solo para `authenticated`)
+7. `migrations/007_order_issues.sql` — inconvenientes por orden (`order_issues`): el equipo reporta, gerencia resuelve; Realtime activado
 
 Si cambias una migración, regenera `setup_completo.sql` (concatenación de `migrations/00*.sql`).
 
@@ -44,6 +45,6 @@ where id = (select id from auth.users where email = 'davidcopete123@gmail.com');
 
 ## Tablas
 
-`profiles`, `clients`, `suppliers`, `materials`, `orders`, `order_events`, `order_materials`, `stock_movements`
+`profiles`, `clients`, `suppliers`, `materials`, `orders`, `order_events`, `order_materials`, `stock_movements`, `order_issues`
 
 Vistas: `order_shortages`, `materials_below_min`
