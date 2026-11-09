@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { formatDateTime } from '../../lib/format'
 import { BusyLabel } from '../ui/Loading'
 import { staggerStyle } from '../../lib/motion'
 import { Link } from 'react-router-dom'
@@ -34,12 +35,12 @@ export function IssueItem({ issue, canResolve, showOrder, onChanged, index = 0 }
   return (
     <li
       style={staggerStyle(index)}
-      className={`stagger rounded-lg border-l-4 px-3 py-2 transition-colors duration-500 ${open ? 'border-danger bg-red-50' : 'border-ksa-green bg-steel-100'}`}
+      className={`stagger rounded-xl border border-l-[6px] px-4 py-3 transition-colors duration-500 ${open ? 'border-red-200 border-l-danger bg-red-50' : 'border-steel-200 border-l-ksa-green bg-white'}`}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="font-semibold">
           {showOrder && issue.orders && (
-            <Link to={`/orden/${issue.order_id}`} className="mr-2 font-mono underline">
+            <Link to={`/orden/${issue.order_id}`} className="mr-2 font-display font-bold underline">
               {issue.orders.code}
             </Link>
           )}
@@ -53,17 +54,15 @@ export function IssueItem({ issue, canResolve, showOrder, onChanged, index = 0 }
       </div>
       <p className="mt-1 whitespace-pre-line text-steel-800">{issue.description}</p>
       <p className="mt-1 text-xs text-steel-600">
-        {issue.reporter?.full_name ?? '—'} ·{' '}
-        {new Date(issue.created_at).toLocaleString('es-CO')}
+        Reportó {issue.reporter?.full_name ?? 'alguien del equipo'} el {formatDateTime(issue.created_at)}
       </p>
 
       {!open && (
         <p className="mt-1 text-sm text-steel-700">
           <strong>Solución:</strong> {issue.resolution || 'sin nota'}
-          <span className="text-xs text-steel-600">
-            {' '}
-            · {issue.resolver?.full_name ?? '—'}
-            {issue.resolved_at && ` · ${new Date(issue.resolved_at).toLocaleString('es-CO')}`}
+          <span className="block text-xs text-steel-600">
+            Resolvió {issue.resolver?.full_name ?? 'gerencia'}
+            {issue.resolved_at && ` el ${formatDateTime(issue.resolved_at)}`}
           </span>
         </p>
       )}

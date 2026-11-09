@@ -1,17 +1,46 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { staggerStyle } from '../../lib/motion'
 
+const DEFAULT_STEPS = ['Encendiendo el taller', 'Revisando las órdenes', 'Contando el inventario', 'Casi listo']
+
 /** Pantalla completa de carga con la marca KSA */
-export function FullScreenLoader({ label = 'Cargando…', dark = true }: { label?: string; dark?: boolean }) {
+export function FullScreenLoader({ steps = DEFAULT_STEPS }: { steps?: string[] }) {
+  const [step, setStep] = useState(0)
+
+  useEffect(() => {
+    const t = setInterval(() => setStep((s) => Math.min(s + 1, steps.length - 1)), 650)
+    return () => clearInterval(t)
+  }, [steps.length])
+
   return (
     <div
-      className={`flex min-h-full flex-col items-center justify-center gap-6 px-6 ${dark ? 'bg-ksa-black text-steel-100' : 'bg-steel-100 text-steel-900'}`}
+      className="flex min-h-full flex-col items-center justify-center gap-8 bg-ksa-black px-6 text-steel-100"
       role="status"
       aria-live="polite"
     >
-      <img src="/logo-ksa.png" alt="" className="logo-breathe w-44 max-w-[60vw]" />
-      <div className="hazard-loader w-56 max-w-[70vw]" aria-hidden="true" />
-      <p className="anim-fade-in text-sm font-semibold uppercase tracking-widest">{label}</p>
+      <div className="relative">
+        <span className="loader-glow" aria-hidden="true" />
+        <img src="/logo-ksa.png" alt="KSA S.A.S Servicios Industriales" className="loader-logo relative w-48 max-w-[60vw]" />
+      </div>
+
+      <div className="w-64 max-w-[75vw]">
+        <div className="loader-track" aria-hidden="true">
+          <div className="loader-fill">
+            <div className="hazard-loader" />
+            <span className="loader-sparks">
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
+        </div>
+        <p key={step} className="loader-step mt-4 text-center font-display text-lg font-semibold tracking-wide text-ksa-yellow">
+          {steps[step]}…
+        </p>
+      </div>
     </div>
   )
 }
@@ -39,12 +68,12 @@ export function Skeleton({ className = '' }: { className?: string }) {
 /** Tarjeta fantasma mientras llegan los datos */
 export function SkeletonCard({ lines = 2 }: { lines?: number }) {
   return (
-    <div className="space-y-3 rounded-xl bg-white p-4 shadow">
+    <div className="panel space-y-3 border-l-[6px] border-l-steel-300 p-4">
       <div className="flex items-start justify-between gap-3">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-5 w-16" />
       </div>
-      <Skeleton className="h-5 w-3/4" />
+      <Skeleton className="h-6 w-3/4" />
       {Array.from({ length: lines }, (_, i) => (
         <Skeleton key={i} className={`h-3 ${i % 2 ? 'w-1/2' : 'w-5/6'}`} />
       ))}
@@ -68,10 +97,10 @@ export function KanbanSkeleton({ columns = 4 }: { columns?: number }) {
   return (
     <div className="flex gap-3 overflow-x-hidden pb-4" role="status" aria-label="Cargando órdenes">
       {Array.from({ length: columns }, (_, c) => (
-        <div key={c} className="stagger w-72 shrink-0 space-y-2 rounded-xl bg-steel-200/80 p-2 sm:w-80" style={staggerStyle(c)}>
-          <div className="flex items-center justify-between px-1 py-1">
+        <div key={c} className="stagger w-72 shrink-0 space-y-2 rounded-2xl bg-steel-200/70 p-2 sm:w-80" style={staggerStyle(c)}>
+          <div className="flex items-center justify-between px-2 py-2">
             <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-5 w-6 rounded-full" />
+            <Skeleton className="h-6 w-6 rounded-full" />
           </div>
           {Array.from({ length: c % 2 ? 1 : 2 }, (_, i) => (
             <SkeletonCard key={i} />

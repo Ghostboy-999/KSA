@@ -120,7 +120,7 @@ export function NewOrderPage() {
 
   return (
     <form onSubmit={onSubmit} className="mx-auto max-w-xl space-y-4">
-      <h2 className="text-2xl font-bold">Nueva orden de trabajo</h2>
+      <h2 className="page-title">Nueva orden de trabajo</h2>
       {requestId && (
         <p className="rounded-lg border-2 border-ksa-green bg-white px-3 py-2 text-sm">
           Desde una solicitud de cliente: al crear la orden, la solicitud queda aceptada y el

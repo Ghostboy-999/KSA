@@ -1,26 +1,32 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+  /* Barlow: tipografía de señalización vial, legible y de carácter industrial */
+  --font-sans: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Barlow Condensed', 'Barlow', 'Segoe UI', system-ui, sans-serif;
   /* Colores de marca tomados del logo KSA S.A.S */
   --color-ksa-black: #000000;
   --color-ksa-yellow: #ffe000;
+  --color-ksa-yellow-dark: #e6c700;
   --color-ksa-yellow-soft: #fff7b8;
   --color-ksa-green: #009a1e;
   --color-ksa-green-dark: #007016;
+  /* Acero: grises fríos de lámina y concreto de taller */
   --color-steel-950: #000000;
-  --color-steel-900: #0d0d0d;
-  --color-steel-800: #1f1f1f;
-  --color-steel-700: #3a3a3a;
-  --color-steel-600: #525252;
-  --color-steel-400: #a3a3a3;
-  --color-steel-200: #e5e5e5;
-  --color-steel-100: #f5f5f5;
+  --color-steel-900: #16191c;
+  --color-steel-800: #262b30;
+  --color-steel-700: #3c434a;
+  --color-steel-600: #59616a;
+  --color-steel-400: #9aa1a8;
+  --color-steel-300: #c4c9ce;
+  --color-steel-200: #dde1e5;
+  --color-steel-100: #eceef1;
   --color-warn: #b45309;
   --color-ok: #009a1e;
-  --color-danger: #dc2626;
+  --color-danger: #d62828;
 }
 
+@layer base {
 html,
 body,
 #root {
@@ -30,19 +36,104 @@ body,
 body {
   margin: 0;
   font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
   background: var(--color-steel-100);
   color: var(--color-steel-900);
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Botones grandes para uso con manos engrasadas */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.005em;
+  line-height: 1.1;
+}
+
+/* Campos de formulario: foco amarillo de seguridad, bien visible */
+input:not([type='checkbox'], [type='radio'], [type='file']),
+select,
+textarea {
+  font: inherit;
+  background-color: white;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+input:not([type='checkbox'], [type='radio'], [type='file']):focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-ksa-black);
+  box-shadow: 0 0 0 4px rgb(255 224 0 / 0.75);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-ksa-green);
+  outline-offset: 2px;
+}
+}
+
+@layer components {
+/* Título de cada pantalla */
+.page-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);
+  line-height: 1.05;
+}
+
+/* Paneles: superficie blanca con borde fino, sin sombras difusas */
+.panel {
+  background: white;
+  border: 1px solid var(--color-steel-200);
+  border-radius: 1rem;
+}
+
+/* Control segmentado (Kanban / Lista, etc.) */
+.segmented {
+  display: inline-flex;
+  padding: 0.25rem;
+  gap: 0.25rem;
+  border-radius: 0.85rem;
+  background: var(--color-steel-200);
+}
+
+.segmented > button {
+  min-height: 2.75rem;
+  padding: 0.4rem 1.1rem;
+  border-radius: 0.65rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-steel-700);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.segmented > button[aria-pressed='true'] {
+  background: white;
+  color: var(--color-ksa-black);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+/* Botones grandes para uso con manos engrasadas.
+   Relieve inferior como una placa de metal: al pulsar se hunde. */
 .btn-touch {
   min-height: 3.25rem;
   min-width: 3.25rem;
-  padding: 0.85rem 1.25rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-  border-radius: 0.75rem;
+  padding: 0.8rem 1.25rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-radius: 0.8rem;
   border: none;
   cursor: pointer;
   touch-action: manipulation;
@@ -51,41 +142,94 @@ body {
 .btn-primary {
   background: var(--color-ksa-yellow);
   color: var(--color-ksa-black);
+  box-shadow: inset 0 -4px 0 var(--color-ksa-yellow-dark);
 }
 
 .btn-primary:not(:disabled):hover {
-  background: #f2d400;
+  background: #fff04d;
 }
 
 .btn-success {
   background: var(--color-ksa-green);
   color: white;
+  box-shadow: inset 0 -4px 0 var(--color-ksa-green-dark);
 }
 
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.btn-primary:disabled,
+.btn-success:disabled,
+.btn-danger:disabled,
+.btn-secondary:disabled,
+.btn-ghost:disabled {
+  opacity: 0.55;
 }
 
 .btn-secondary {
   background: var(--color-ksa-black);
   color: white;
+  box-shadow: inset 0 -4px 0 #2b2b2b;
 }
 
 .btn-ghost {
-  background: transparent;
+  background: white;
   color: var(--color-steel-800);
-  border: 2px solid var(--color-steel-400);
+  border: 2px solid var(--color-steel-300);
+}
+
+.btn-ghost:not(:disabled):hover {
+  border-color: var(--color-steel-700);
 }
 
 .btn-danger {
   background: var(--color-danger);
   color: white;
+  box-shadow: inset 0 -4px 0 #a51d1d;
 }
 
-:focus-visible {
-  outline: 3px solid var(--color-ksa-green);
-  outline-offset: 2px;
+
+
+.btn-touch {
+  transition:
+    transform 120ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.btn-touch:not(:disabled):active {
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.2);
+}
+
+.btn-touch:disabled {
+  cursor: progress;
+}
+
+/* Campos que reutilizan el tamaño táctil: texto normal, no de botón */
+input.btn-touch,
+select.btn-touch,
+textarea.btn-touch {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+/* Tarjetas que se elevan al pasar el puntero */
+.card-lift {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+@media (hover: hover) {
+  .card-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px -14px rgb(0 0 0 / 0.45);
+  }
+}
+
 }
 
 /* Franja de seguridad amarilla/verde como la del logo */
@@ -103,42 +247,6 @@ body {
 }
 
 /* ===================== Movimiento ===================== */
-
-.btn-touch {
-  transition:
-    transform 120ms ease,
-    background-color 160ms ease,
-    color 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    opacity 160ms ease;
-}
-
-.btn-touch:not(:disabled):active {
-  transform: scale(0.96);
-}
-
-.btn-touch:not(:disabled):hover {
-  box-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.35);
-}
-
-.btn-touch:disabled {
-  cursor: progress;
-}
-
-/* Tarjetas que se elevan al pasar el puntero */
-.card-lift {
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-@media (hover: hover) {
-  .card-lift:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 24px -12px rgb(0 0 0 / 0.35);
-  }
-}
 
 @keyframes ksa-fade-up {
   from {
@@ -277,13 +385,16 @@ body {
 .skeleton {
   border-radius: 0.5rem;
   background: linear-gradient(
-    90deg,
+    100deg,
     var(--color-steel-200) 0%,
-    #f0f0f0 40%,
-    var(--color-steel-200) 80%
+    var(--color-steel-200) 35%,
+    #fffbe0 48%,
+    #ffffff 52%,
+    var(--color-steel-200) 65%,
+    var(--color-steel-200) 100%
   );
-  background-size: 200% 100%;
-  animation: ksa-shimmer 1.4s linear infinite;
+  background-size: 250% 100%;
+  animation: ksa-shimmer 1.3s ease-in-out infinite;
 }
 
 /* Franja de seguridad en movimiento (barra de carga) */
@@ -316,6 +427,132 @@ body {
   border-right-color: transparent;
   vertical-align: -0.2em;
   animation: ksa-spin 700ms linear infinite;
+}
+
+/* ===================== Pantalla de carga ===================== */
+
+@keyframes ksa-dig {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  30% {
+    transform: rotate(-3deg) scale(1.03);
+  }
+  60% {
+    transform: rotate(2deg) scale(1.01);
+  }
+}
+
+@keyframes ksa-fill {
+  0% {
+    width: 4%;
+  }
+  60% {
+    width: 72%;
+  }
+  100% {
+    width: 94%;
+  }
+}
+
+@keyframes ksa-spark {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--sx), var(--sy)) scale(0.3);
+  }
+}
+
+@keyframes ksa-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ksa-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.05);
+  }
+}
+
+.loader-logo {
+  transform-origin: 30% 85%;
+  animation: ksa-dig 2.2s ease-in-out infinite;
+}
+
+/* Halo amarillo detrás del logo */
+.loader-glow {
+  position: absolute;
+  inset: -18%;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgb(255 224 0 / 0.35), transparent);
+  animation: ksa-glow-pulse 2.2s ease-in-out infinite;
+}
+
+.loader-track {
+  position: relative;
+  height: 0.85rem;
+  border-radius: 999px;
+  background: #1c1c1c;
+  box-shadow: inset 0 0 0 1px #333;
+}
+
+.loader-fill {
+  position: relative;
+  height: 100%;
+  border-radius: 999px;
+  overflow: visible;
+  animation: ksa-fill 2.6s cubic-bezier(0.3, 0.7, 0.2, 1) forwards;
+}
+
+.loader-fill > .hazard-loader {
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* Chispas de soldadura en la punta de la barra */
+.loader-sparks {
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  width: 0;
+  height: 0;
+}
+
+.loader-sparks > i {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #fff3a0;
+  box-shadow: 0 0 6px 1px rgb(255 224 0 / 0.9);
+  animation: ksa-spark 650ms ease-out infinite;
+}
+
+.loader-sparks > i:nth-child(1) { --sx: 14px; --sy: -18px; animation-delay: 0ms; }
+.loader-sparks > i:nth-child(2) { --sx: 22px; --sy: -6px; animation-delay: 110ms; }
+.loader-sparks > i:nth-child(3) { --sx: 18px; --sy: 12px; animation-delay: 220ms; }
+.loader-sparks > i:nth-child(4) { --sx: 8px; --sy: -24px; animation-delay: 330ms; }
+.loader-sparks > i:nth-child(5) { --sx: 26px; --sy: 4px; animation-delay: 440ms; }
+.loader-sparks > i:nth-child(6) { --sx: 10px; --sy: 20px; animation-delay: 550ms; }
+
+.loader-step {
+  animation: ksa-step-in 260ms ease both;
 }
 
 @media (prefers-reduced-motion: reduce) {
