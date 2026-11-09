@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import { staggerStyle } from '../lib/motion'
 import { supabase } from '../lib/supabase'
 import { ROLE_LABELS, type Profile, type UserRole } from '../types/database'
 
 export function AdminUsersPage() {
+  const { user } = useAuth()
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [error, setError] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
@@ -42,38 +44,51 @@ export function AdminUsersPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-bold">Usuarios</h2>
-        <p className="text-steel-600">
-          Toda cuenta nueva entra como <strong>Cliente</strong> (los clientes se registran solos
-          desde la app). Para el equipo: cree el usuario en Supabase → Authentication → Users y
-          luego cámbiele aquí el rol a Trabajador, Gerencia o Administrador.
-          El primer admin: después de crear su cuenta, ejecute en SQL (ver también backend/README.md):
+        <h2 className="page-title">Usuarios</h2>
+        <p className="mt-1 max-w-prose text-steel-600">
+          Las cuentas nuevas entran como cliente. Para sumar a alguien del equipo, créale la cuenta
+          en Supabase (Authentication, Users) y cámbiale aquí el rol.
         </p>
-        <pre className="mt-2 overflow-x-auto rounded-lg bg-steel-900 p-3 text-xs text-ksa-yellow">
+        <details className="mt-2 max-w-prose text-sm text-steel-600">
+          <summary className="cursor-pointer font-semibold text-steel-700">¿No queda ningún administrador?</summary>
+          <p className="mt-2">Ejecuta esto en el SQL Editor de Supabase con el correo de la persona:</p>
+          <pre className="mt-2 overflow-x-auto rounded-lg bg-ksa-black p-3 text-xs text-ksa-yellow">
 {`update profiles set role = 'admin'
 where id = (select id from auth.users where email = 'su@correo.com');`}
-        </pre>
+          </pre>
+        </details>
       </div>
 
-      {msg && <p key={msg} className="anim-slide-down rounded bg-white px-3 py-2 text-sm shadow" role="status">{msg}</p>}
+      {msg && <p key={msg} className="anim-slide-down panel px-3 py-2 text-sm" role="status">{msg}</p>}
       {error && <p className="text-danger">{error}</p>}
 
       <ul className="space-y-3">
-        {profiles.map((p, i) => (
+        {profiles.map((p, i) => {
+          const isMe = p.id === user?.id
+          return (
           <li
             key={p.id}
             style={staggerStyle(i)}
-            className="stagger card-lift flex flex-col gap-2 rounded-xl bg-white p-4 shadow sm:flex-row sm:items-center sm:justify-between"
+            className="stagger card-lift flex flex-col gap-2 panel p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <p className="font-bold">{p.full_name}</p>
-              <p className="text-sm text-steel-600">
-                {ROLE_LABELS[p.role]} · {p.active ? 'Activo' : 'Inactivo'}
+              <p className="font-display text-xl font-bold">
+                {p.full_name}
+                {isMe && <span className="ml-2 rounded-md bg-ksa-yellow px-2 py-0.5 font-sans text-sm text-ksa-black">Tú</span>}
+              </p>
+              <p className="text-steel-600">
+                {ROLE_LABELS[p.role]}, {p.active ? 'activo' : 'inactivo'}
               </p>
             </div>
+            {isMe ? (
+              <p className="max-w-xs text-sm text-steel-600">
+                Tu propio rol y estado no se cambian desde aquí, para que la cuenta nunca se quede sin
+                administrador. Pídeselo a otro administrador.
+              </p>
+            ) : (
             <div className="flex flex-wrap gap-2">
               <select
-                className="btn-touch border-2 border-steel-400 bg-white text-sm"
+                className="btn-touch border-2 border-steel-300 bg-white"
                 value={p.role}
                 onChange={(e) => void updateRole(p.id, e.target.value as UserRole)}
               >
@@ -85,14 +100,16 @@ where id = (select id from auth.users where email = 'su@correo.com');`}
               </select>
               <button
                 type="button"
-                className={`btn-touch text-sm ${p.active ? 'btn-danger' : 'btn-primary'}`}
+                className={`btn-touch ${p.active ? 'btn-danger' : 'btn-primary'}`}
                 onClick={() => void toggleActive(p)}
               >
                 {p.active ? 'Desactivar' : 'Activar'}
               </button>
             </div>
+            )}
           </li>
-        ))}
+          )
+        })}
       </ul>
     </div>
   )

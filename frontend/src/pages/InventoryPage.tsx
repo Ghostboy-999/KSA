@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useMinDuration } from '../hooks/useMinDuration'
 import { Skeleton } from '../components/ui/Loading'
 import { staggerStyle } from '../lib/motion'
 import { Link } from 'react-router-dom'
@@ -8,7 +9,8 @@ import { useInventory } from '../hooks/useInventory'
 export function InventoryPage() {
   const { profile, user } = useAuth()
   const isManager = profile?.role === 'admin' || profile?.role === 'gerente'
-  const { materials, shortages, loading, error, addStock } = useInventory()
+  const { materials, shortages, loading: rawLoading, error, addStock } = useInventory()
+  const loading = useMinDuration(rawLoading, 600)
   const [materialId, setMaterialId] = useState('')
   const [qty, setQty] = useState('10')
   const [reason, setReason] = useState('Compra / ingreso')
@@ -30,18 +32,18 @@ export function InventoryPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-2xl font-bold">Inventario de aceros</h2>
+        <h2 className="page-title">Inventario de aceros</h2>
         <p className="text-steel-600">
           Stock, mínimos y alertas de faltantes antes de pasar a taller.
         </p>
       </div>
 
       {msg && (
-        <p key={msg} className="anim-slide-down rounded-lg bg-white px-3 py-2 text-sm font-medium shadow" role="status">{msg}</p>
+        <p key={msg} className="anim-slide-down panel px-3 py-2 text-sm font-medium" role="status">{msg}</p>
       )}
       {error && <p className="text-danger">{error}</p>}
-      {loading && materials.length === 0 && (
-        <div className="space-y-2 rounded-xl bg-white p-4 shadow" role="status" aria-label="Cargando inventario">
+      {loading && (
+        <div className="space-y-2 panel p-4" role="status" aria-label="Cargando inventario">
           <Skeleton className="h-8 w-full" />
           {Array.from({ length: 5 }, (_, i) => (
             <Skeleton key={i} className="h-6 w-full" />
@@ -64,7 +66,7 @@ export function InventoryPage() {
                   · {s.material_name}
                   {s.supplier_name ? ` (${s.supplier_name})` : ''}
                 </span>
-                <span className="font-mono font-semibold">
+                <span className="font-display font-bold tabular-nums">
                   falta {s.qty_shortage} {s.unit}
                 </span>
               </li>
@@ -88,7 +90,8 @@ export function InventoryPage() {
         </section>
       )}
 
-      <section className="overflow-x-auto rounded-xl bg-white shadow">
+      {!loading && (
+      <section className="anim-fade-up panel overflow-x-auto">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-steel-800 text-white">
             <tr>
@@ -109,11 +112,11 @@ export function InventoryPage() {
                   className={`stagger border-b border-steel-200 transition-colors hover:bg-steel-100 ${low ? 'bg-ksa-yellow-soft' : ''}`}
                 >
                   <td className="px-3 py-3 font-semibold">{m.name}</td>
-                  <td className="px-3 py-3 font-mono">{m.grade}</td>
-                  <td className="px-3 py-3 font-mono">
+                  <td className="px-3 py-3 tabular-nums">{m.grade}</td>
+                  <td className="px-3 py-3 tabular-nums">
                     {m.stock_qty} {m.unit}
                   </td>
-                  <td className="px-3 py-3 font-mono">
+                  <td className="px-3 py-3 tabular-nums">
                     {m.min_stock} {m.unit}
                   </td>
                   <td className="px-3 py-3">
@@ -125,11 +128,12 @@ export function InventoryPage() {
           </tbody>
         </table>
       </section>
+      )}
 
       {isManager && (
         <form
           onSubmit={onAddStock}
-          className="space-y-3 rounded-xl bg-white p-4 shadow"
+          className="space-y-3 panel p-4"
         >
           <h3 className="text-lg font-bold">Ingresar stock</h3>
           <select

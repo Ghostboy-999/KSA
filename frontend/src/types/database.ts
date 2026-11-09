@@ -186,6 +186,17 @@ export const STAGE_LABELS: Record<OrderStage, string> = {
   entregada: 'Entregada',
 }
 
+/** Botón para avanzar a cada etapa, dicho como acción */
+export const ADVANCE_LABELS: Record<OrderStage, string> = {
+  cotizada: 'Cotizar',
+  aprobada: 'Aprobar',
+  materiales: 'Pedir materiales',
+  en_taller: 'Entrar a taller',
+  pruebas: 'Pasar a pruebas',
+  lista: 'Marcar lista',
+  entregada: 'Entregar',
+}
+
 export const PRIORITY_LABELS: Record<OrderPriority, string> = {
   baja: 'Baja',
   media: 'Media',

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { AppVersion } from '../components/ui/AppVersion'
 import { BusyLabel } from '../components/ui/Loading'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -45,9 +46,6 @@ export function LoginPage() {
         >
           <div className="hazard-stripe" aria-hidden="true" />
           <div className="p-6">
-            <p className="text-xs font-semibold uppercase tracking-widest text-ksa-green">
-              Servicios Industriales KSA
-            </p>
             <h1 className="mb-1 text-3xl font-bold text-steel-900">Ingresar</h1>
             <p className="mb-6 text-steel-600">Órdenes e inventario del taller</p>
 
@@ -97,6 +95,7 @@ export function LoginPage() {
             </p>
           </div>
         </form>
+        <AppVersion className="text-steel-400" />
       </div>
       <div className="hazard-stripe" aria-hidden="true" />
     </div>

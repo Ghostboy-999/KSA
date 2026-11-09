@@ -1,4 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { useMinDuration } from '../hooks/useMinDuration'
+import { PhotoPicker } from '../components/ui/PhotoPicker'
+import { formatDate, formatDateTime, isOverdue } from '../lib/format'
 import { Skeleton, SkeletonList } from '../components/ui/Loading'
 import { staggerStyle } from '../lib/motion'
 import { Link, useParams } from 'react-router-dom'
@@ -31,6 +34,7 @@ export function OrderDetailPage() {
   const [qty, setQty] = useState('1')
   const [msg, setMsg] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const showSkeleton = useMinDuration(loading, 600)
   const { issues, reload: reloadIssues } = useIssues({ orderId: id, enabled: !!id })
   const openIssues = issues.filter((i) => i.status === 'abierto').length
 
@@ -114,7 +118,7 @@ export function OrderDetailPage() {
   }
 
   // Solo la primera carga muestra esqueleto; las recargas no hacen parpadear la página
-  if (loading && !order)
+  if (showSkeleton && !order)
     return (
       <div className="space-y-5" role="status" aria-label="Cargando orden">
         <Skeleton className="h-12 w-32" />
@@ -134,34 +138,35 @@ export function OrderDetailPage() {
 
   return (
     <div className="space-y-5">
-      <Link to="/" className="btn-touch btn-ghost inline-flex text-sm">
-        ← Tablero
+      <Link to="/" className="inline-flex items-center gap-1 font-display text-lg font-semibold text-steel-700 hover:text-ksa-black">
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        Volver al tablero
       </Link>
 
-      <header className="anim-fade-up rounded-xl border-2 border-steel-700 bg-white p-4">
-        <p className="font-mono text-sm font-bold">{order.code}</p>
-        <h2 className="text-2xl font-bold">{order.clients?.name}</h2>
+      <header className="anim-fade-up panel border-l-[6px] border-l-ksa-yellow p-5">
+        <p className="font-display text-lg font-bold tracking-wide text-steel-600">{order.code}</p>
+        <h2 className="page-title">{order.clients?.name}</h2>
         <p className="mt-1 text-steel-700">{order.description}</p>
         <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          <span className="rounded bg-steel-200 px-2 py-1">
+          <span className="rounded-md bg-ksa-black px-2.5 py-1 font-semibold text-ksa-yellow">
             {STAGE_LABELS[order.stage]}
           </span>
-          <span className="rounded bg-steel-200 px-2 py-1">
-            {PRIORITY_LABELS[order.priority]}
+          <span className="rounded-md bg-steel-100 px-2.5 py-1">
+            Prioridad {PRIORITY_LABELS[order.priority].toLowerCase()}
           </span>
           {order.due_date && (
-            <span className="rounded bg-steel-200 px-2 py-1">
-              Compromiso: {order.due_date}
+            <span className={`rounded-md px-2.5 py-1 ${order.stage !== 'entregada' && isOverdue(order.due_date) ? 'bg-red-50 font-semibold text-danger' : 'bg-steel-100'}`}>
+              Entrega {formatDate(order.due_date)}
             </span>
           )}
         </div>
       </header>
 
       {msg && (
-        <p key={msg} className="anim-slide-down rounded-lg bg-white px-3 py-2 text-sm font-medium shadow" role="status">{msg}</p>
+        <p key={msg} className="anim-slide-down panel px-3 py-2 text-sm font-medium" role="status">{msg}</p>
       )}
 
-      <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(1)}>
+      <section className="stagger panel p-4" style={staggerStyle(1)}>
         <h3 className="mb-3 text-lg font-bold">
           Inconvenientes
           {openIssues > 0 && (
@@ -186,7 +191,7 @@ export function OrderDetailPage() {
       </section>
 
       {isManager && (
-        <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(2)}>
+        <section className="stagger panel p-4" style={staggerStyle(2)}>
           <h3 className="mb-2 text-lg font-bold">Asignar responsable</h3>
           <select
             className="btn-touch w-full border-2 border-steel-400 bg-white text-left"
@@ -203,7 +208,7 @@ export function OrderDetailPage() {
         </section>
       )}
 
-      <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(3)}>
+      <section className="stagger panel p-4" style={staggerStyle(3)}>
         <h3 className="mb-3 text-lg font-bold">Materiales de la orden</h3>
         <ul className="mb-4 space-y-2">
           {orderMats.map((om) => {
@@ -217,7 +222,7 @@ export function OrderDetailPage() {
                 <span>
                   {om.materials?.name} ({om.materials?.grade})
                 </span>
-                <span className="font-mono font-semibold">
+                <span className="font-display font-bold tabular-nums">
                   {om.qty_required} {om.materials?.unit}
                   {short && ' · FALTA'}
                 </span>
@@ -260,7 +265,7 @@ export function OrderDetailPage() {
         )}
       </section>
 
-      <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(4)}>
+      <section className="stagger panel p-4" style={staggerStyle(4)}>
         <h3 className="mb-2 text-lg font-bold">Foto inicial (opcional)</h3>
         {order.photo_url && (
           <img
@@ -269,31 +274,25 @@ export function OrderDetailPage() {
             className="mb-3 max-h-48 rounded-lg object-cover"
           />
         )}
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="block w-full text-sm"
-          onChange={(e) => {
-            const f = e.target.files?.[0]
-            if (f) void uploadPhoto(f)
-          }}
+        <PhotoPicker
+          label={order.photo_url ? 'Cambiar foto' : 'Tomar o elegir foto'}
+          capture
+          onPick={(files) => void uploadPhoto(files[0])}
         />
       </section>
 
-      <section className="stagger rounded-xl bg-white p-4 shadow" style={staggerStyle(5)}>
+      <section className="stagger panel p-4" style={staggerStyle(5)}>
         <h3 className="mb-3 text-lg font-bold">Historial</h3>
         <ul className="space-y-2 text-sm">
           {events.map((ev) => (
             <li key={ev.id} className="border-b border-steel-200 pb-2">
               <span className="font-semibold">
-                {ev.from_stage ? STAGE_LABELS[ev.from_stage] : '—'} →{' '}
-                {STAGE_LABELS[ev.to_stage]}
+                {ev.from_stage
+                  ? `De ${STAGE_LABELS[ev.from_stage].toLowerCase()} a ${STAGE_LABELS[ev.to_stage].toLowerCase()}`
+                  : `Creada como ${STAGE_LABELS[ev.to_stage].toLowerCase()}`}
               </span>
-              <span className="text-steel-600">
-                {' '}
-                · {ev.profiles?.full_name ?? 'sistema'} ·{' '}
-                {new Date(ev.created_at).toLocaleString('es-CO')}
+              <span className="block text-steel-600">
+                {ev.profiles?.full_name ?? 'Automático'}, {formatDateTime(ev.created_at)}
               </span>
               {ev.note && <p className="text-steel-700">{ev.note}</p>}
             </li>

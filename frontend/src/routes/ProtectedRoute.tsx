@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { FullScreenLoader } from '../components/ui/Loading'
 import { useAuth } from '../contexts/AuthContext'
+import { useSinceAppStart } from '../hooks/useMinDuration'
 import { ClientPortalPage } from '../pages/ClientPortalPage'
 import type { UserRole } from '../types/database'
 
@@ -10,8 +11,10 @@ interface Props {
 
 export function ProtectedRoute({ roles }: Props) {
   const { session, profile, profileError, loading, refreshProfile, signOut } = useAuth()
+  // Bienvenida mínima al abrir la app: lo justo para ver la animación, sin hacer esperar
+  const splash = useSinceAppStart(1400)
 
-  if (loading) {
+  if (loading || (splash && session)) {
     return <FullScreenLoader />
   }
 

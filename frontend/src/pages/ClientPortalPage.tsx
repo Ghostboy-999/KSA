@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { AppVersion } from '../components/ui/AppVersion'
+import { useMinDuration } from '../hooks/useMinDuration'
+import { PhotoPicker } from '../components/ui/PhotoPicker'
+import { formatDate } from '../lib/format'
 import { BusyLabel, SkeletonList } from '../components/ui/Loading'
 import { staggerStyle } from '../lib/motion'
 import { RequestPhotos } from '../components/requests/RequestPhotos'
@@ -74,7 +78,7 @@ function NewRequestForm({ userId, onDone }: { userId: string; onDone: () => void
   const input = 'w-full rounded-xl border-2 border-steel-400 bg-white px-4 py-3'
 
   return (
-    <form onSubmit={submit} className="anim-fade-up space-y-3 rounded-xl bg-white p-4 shadow">
+    <form onSubmit={submit} className="anim-fade-up space-y-3 panel p-4">
       <h3 className="text-lg font-bold">Nueva solicitud</h3>
       <label className="block">
         <span className="mb-1 block text-sm font-semibold">¿Qué necesitas?</span>
@@ -94,19 +98,15 @@ function NewRequestForm({ userId, onDone }: { userId: string; onDone: () => void
           <input type="date" className={input} value={desiredDate} onChange={(e) => setDesiredDate(e.target.value)} />
         </label>
       </div>
-      <label className="block">
+      <div>
         <span className="mb-1 block text-sm font-semibold">Fotos (opcional, hasta 5)</span>
-        <input
-          type="file"
-          accept="image/*"
+        <PhotoPicker
+          label={photos.length ? 'Cambiar fotos' : 'Agregar fotos'}
           multiple
-          className="block w-full text-sm"
-          onChange={(e) => setPhotos(Array.from(e.target.files ?? []).slice(0, 5))}
+          hint={photos.length ? (photos.length === 1 ? '1 foto lista para enviar' : `${photos.length} fotos listas para enviar`) : undefined}
+          onPick={(files) => setPhotos(files.slice(0, 5))}
         />
-        {photos.length > 0 && (
-          <span className="mt-1 block text-xs text-steel-600">{photos.length} foto(s) seleccionada(s)</span>
-        )}
-      </label>
+      </div>
       {err && <p className="rounded-lg bg-red-100 px-3 py-2 text-sm text-danger">{err}</p>}
       <button type="submit" className="btn-touch btn-primary w-full" disabled={busy}>
         <BusyLabel busy={busy} busyText={photos.length ? 'Subiendo fotos…' : 'Enviando…'}>Enviar solicitud</BusyLabel>
@@ -123,7 +123,8 @@ export function ClientPortalPage() {
   const [ordersLoading, setOrdersLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
-  const { requests, loading: reqLoading } = useClientRequests()
+  const { requests, loading: rawReqLoading } = useClientRequests()
+  const reqLoading = useMinDuration(rawReqLoading, 600)
 
   const loadOrders = useCallback(async () => {
     const claim = await claimClientAccount(false)
@@ -148,7 +149,7 @@ export function ClientPortalPage() {
               <p className="font-semibold">{profile?.full_name}</p>
               <p className="text-ksa-yellow">Cliente</p>
             </div>
-            <button type="button" className="btn-touch border-2 border-steel-400 bg-transparent text-steel-100" onClick={() => void signOut()}>
+            <button type="button" className="rounded-lg border-2 border-steel-700 px-3 py-2 font-display font-semibold text-steel-200 transition-colors hover:border-ksa-yellow hover:text-ksa-yellow" onClick={() => void signOut()}>
               Salir
             </button>
           </div>
@@ -163,7 +164,7 @@ export function ClientPortalPage() {
 
         <section className="space-y-3">
           <div className="flex items-end justify-between gap-3">
-            <h2 className="text-2xl font-bold">Mis solicitudes</h2>
+            <h2 className="page-title">Mis solicitudes</h2>
             {!showForm && (
               <button type="button" className="btn-touch btn-primary" onClick={() => { setNotice(null); setShowForm(true) }}>
                 + Nueva solicitud
@@ -182,13 +183,13 @@ export function ClientPortalPage() {
           )}
           {reqLoading && <SkeletonList count={2} />}
           {!reqLoading && requests.length === 0 && !showForm && (
-            <p className="rounded-xl bg-white px-4 py-3 text-steel-600 shadow">
+            <p className="panel px-4 py-3 text-steel-600">
               Aún no has enviado solicitudes.
             </p>
           )}
           <ul className="space-y-3">
             {requests.map((r, n) => (
-              <li key={r.id} className="stagger card-lift rounded-xl bg-white p-4 shadow" style={staggerStyle(n)}>
+              <li key={r.id} className="stagger card-lift panel p-4" style={staggerStyle(n)}>
                 <div className="flex items-start justify-between gap-2">
                   <p className="whitespace-pre-line font-semibold">{r.description}</p>
                   <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-bold uppercase text-white ${statusColor[r.status]}`}>
@@ -197,9 +198,8 @@ export function ClientPortalPage() {
                 </div>
                 {r.measures && <p className="mt-1 text-sm text-steel-700">Medidas: {r.measures}</p>}
                 <p className="mt-1 text-xs text-steel-600">
-                  Cantidad {r.quantity}
-                  {r.desired_date && ` · Para ${r.desired_date}`} · Enviada{' '}
-                  {new Date(r.created_at).toLocaleDateString('es-CO')}
+                  Cantidad: {r.quantity}. Enviada el {formatDate(r.created_at)}
+                  {r.desired_date && `, para el ${formatDate(r.desired_date)}`}.
                 </p>
                 {r.response && (
                   <p className="mt-2 rounded-lg bg-steel-100 px-3 py-2 text-sm">
@@ -208,7 +208,7 @@ export function ClientPortalPage() {
                 )}
                 {r.orders?.code && (
                   <p className="mt-1 text-sm">
-                    Orden creada: <span className="font-mono font-bold">{r.orders.code}</span>
+                    Orden creada: <span className="font-display font-bold">{r.orders.code}</span>
                   </p>
                 )}
                 <RequestPhotos paths={r.photo_paths} />
@@ -218,31 +218,31 @@ export function ClientPortalPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-2xl font-bold">Mis órdenes</h2>
+          <h2 className="page-title">Mis órdenes</h2>
           {ordersErr && <p className="text-danger">{ordersErr}</p>}
           {ordersLoading && <SkeletonList count={2} lines={1} />}
           {!ordersLoading && linked === false && orders.length === 0 && (
-            <p className="rounded-xl bg-white px-4 py-3 text-steel-600 shadow">
+            <p className="panel px-4 py-3 text-steel-600">
               No encontramos órdenes con tu correo. Si ya trabajaste con KSA, pide que registren
               este correo en tu ficha de cliente.
             </p>
           )}
           {!ordersLoading && linked && orders.length === 0 && (
-            <p className="rounded-xl bg-white px-4 py-3 text-steel-600 shadow">
+            <p className="panel px-4 py-3 text-steel-600">
               Todavía no tienes órdenes.
             </p>
           )}
           <ul className="space-y-3">
             {orders.map((o, n) => (
-              <li key={o.id} className="stagger card-lift space-y-2 rounded-xl border-2 border-steel-700 bg-white p-4" style={staggerStyle(n)}>
+              <li key={o.id} className="stagger card-lift panel space-y-3 border-l-[6px] border-l-ksa-yellow p-4" style={staggerStyle(n)}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="font-mono text-sm font-bold">{o.code}</p>
-                    <p className="font-semibold">{o.description}</p>
+                    <p className="font-display font-bold tracking-wide text-steel-600">{o.code}</p>
+                    <p className="font-display text-xl font-bold leading-tight">{o.description}</p>
                   </div>
                   {o.due_date && (
-                    <span className="shrink-0 rounded bg-steel-200 px-2 py-1 text-xs">
-                      Entrega: {o.due_date}
+                    <span className="shrink-0 rounded-md bg-steel-100 px-2 py-1 text-sm">
+                      Entrega {formatDate(o.due_date)}
                     </span>
                   )}
                 </div>
@@ -251,6 +251,7 @@ export function ClientPortalPage() {
             ))}
           </ul>
         </section>
+        <AppVersion className="pt-6 text-center text-steel-600" />
       </main>
     </div>
   )

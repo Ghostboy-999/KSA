@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { RoleGate } from './components/auth/RoleGate'
 import { AppShell } from './components/layout/AppShell'
+import { UpdateBanner } from './components/ui/UpdateBanner'
 import { AuthProvider } from './contexts/AuthContext'
 import { AdminUsersPage } from './pages/AdminUsersPage'
 import { BoardPage } from './pages/BoardPage'
@@ -16,6 +17,7 @@ import { ProtectedRoute } from './routes/ProtectedRoute'
 export default function App() {
   return (
     <AuthProvider>
+      <UpdateBanner />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />

@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
-import { KanbanSkeleton, SkeletonList } from '../components/ui/Loading'
+import { Link } from 'react-router-dom'
+import { KanbanSkeleton, Skeleton, SkeletonList } from '../components/ui/Loading'
+import { useMinDuration } from '../hooks/useMinDuration'
 import { staggerStyle } from '../lib/motion'
 import { KanbanBoard } from '../components/orders/KanbanBoard'
 import { OrderCard } from '../components/orders/OrderCard'
@@ -20,6 +22,7 @@ export function BoardPage() {
   const [toast, setToast] = useState<string | null>(null)
 
   const load = useMemo(() => workshopLoad(orders), [orders])
+  const showLoading = useMinDuration(loading, 700)
 
   async function advance(order: Order) {
     const next = nextStage(order.stage)
@@ -51,62 +54,75 @@ export function BoardPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">
-            {isWorker ? 'Mis órdenes del día' : 'Tablero de órdenes'}
-          </h2>
-          <p className="text-steel-600">
-            Carga en taller:{' '}
-            <strong key={load.total} className="anim-pop inline-block text-steel-900">{load.total}</strong> activas
-            {load.byStage.en_taller != null && (
-              <> · {load.byStage.en_taller} en piso</>
-            )}
-          </p>
+          <h2 className="page-title">{isWorker ? 'Mis órdenes del día' : 'Tablero de órdenes'}</h2>
+          {showLoading ? (
+            <Skeleton className="mt-2 h-5 w-48" />
+          ) : (
+            <p className="mt-1 text-steel-600">
+              <strong key={load.total} className="anim-pop inline-block font-display text-xl text-steel-900">
+                {load.total}
+              </strong>{' '}
+              {load.total === 1 ? 'orden activa' : 'órdenes activas'} en el taller
+              {load.byStage.en_taller != null && (
+                <>
+                  , {load.byStage.en_taller} en piso
+                </>
+              )}
+            </p>
+          )}
         </div>
 
-        <div className="flex gap-2">
-          <button
-            type="button"
-            className={`btn-touch ${view === 'kanban' ? 'btn-primary' : 'btn-ghost'}`}
-            onClick={() => setView('kanban')}
-          >
+        <div className="segmented" role="group" aria-label="Vista">
+          <button type="button" aria-pressed={view === 'kanban'} onClick={() => setView('kanban')}>
             Kanban
           </button>
-          <button
-            type="button"
-            className={`btn-touch ${view === 'lista' ? 'btn-primary' : 'btn-ghost'}`}
-            onClick={() => setView('lista')}
-          >
+          <button type="button" aria-pressed={view === 'lista'} onClick={() => setView('lista')}>
             Lista
           </button>
         </div>
       </div>
 
       {toast && (
-        <div key={toast} className="anim-slide-down rounded-xl border-2 border-steel-700 bg-white px-4 py-3 text-sm font-medium" role="status">
+        <div key={toast} className="anim-slide-down panel border-l-[6px] border-l-ksa-black px-4 py-3 font-medium" role="status">
           {toast}
         </div>
       )}
 
-      {loading && (view === 'kanban' ? <KanbanSkeleton /> : <SkeletonList count={4} />)}
+      {showLoading && (view === 'kanban' ? <KanbanSkeleton /> : <SkeletonList count={4} />)}
       {error && <p className="text-danger">{error}</p>}
 
-      {!loading && view === 'kanban' && (
+      {!showLoading && !error && orders.length === 0 && (
+        <div className="anim-fade-up panel flex flex-col items-start gap-4 border-l-[6px] border-l-ksa-yellow p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="text-2xl font-bold">{isWorker ? 'No tienes órdenes asignadas' : 'Todavía no hay órdenes activas'}</h3>
+            <p className="text-steel-600">
+              {isWorker
+                ? 'Cuando gerencia te asigne una orden aparecerá aquí.'
+                : 'Crea la primera orden de trabajo y la verás avanzar por las etapas del taller.'}
+            </p>
+          </div>
+          {!isWorker && (
+            <Link to="/nueva-orden" className="btn-touch btn-primary shrink-0">
+              Crear orden
+            </Link>
+          )}
+        </div>
+      )}
+
+      {!showLoading && orders.length > 0 && view === 'kanban' && (
         <KanbanBoard orders={orders} onAdvance={advance} busyId={busyId} />
       )}
 
-      {!loading && view === 'lista' && (
+      {!showLoading && orders.length > 0 && view === 'lista' && (
         <div className="grid gap-3 sm:grid-cols-2">
           {orders.map((order, i) => (
             <div key={order.id} className="stagger" style={staggerStyle(i)}>
-              <OrderCard order={order} onAdvance={advance} busy={busyId === order.id} />
+              <OrderCard order={order} onAdvance={advance} busy={busyId === order.id} showStage />
             </div>
           ))}
-          {orders.length === 0 && (
-            <p className="text-steel-600">No hay órdenes activas.</p>
-          )}
         </div>
       )}
     </div>

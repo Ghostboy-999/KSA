@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import { useMinDuration } from '../hooks/useMinDuration'
 import { SkeletonList } from '../components/ui/Loading'
 import { IssueItem } from '../components/issues/IssueItem'
 import { useIssues } from '../hooks/useIssues'
 
 export function IssuesPage() {
   const [showResolved, setShowResolved] = useState(false)
-  const { issues, loading, error, reload } = useIssues({ includeResolved: showResolved })
+  const { issues, loading: rawLoading, error, reload } = useIssues({ includeResolved: showResolved })
+  const loading = useMinDuration(rawLoading, 600)
   const open = issues.filter((i) => i.status === 'abierto')
   const resolved = issues.filter((i) => i.status === 'resuelto')
 
@@ -13,7 +15,7 @@ export function IssuesPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold">Inconvenientes</h2>
+          <h2 className="page-title">Inconvenientes</h2>
           <p className="text-steel-600">
             <strong className="text-steel-900">{open.length}</strong>{' '}
             {open.length === 1 ? 'abierto' : 'abiertos'}
@@ -37,7 +39,7 @@ export function IssuesPage() {
             <IssueItem key={i.id} index={n} issue={i} canResolve showOrder onChanged={() => void reload()} />
           ))}
           {open.length === 0 && (
-            <li className="anim-fade-in rounded-lg bg-white px-3 py-4 text-steel-600 shadow">
+            <li className="anim-fade-in panel px-3 py-4 text-steel-600">
               No hay inconvenientes abiertos.
             </li>
           )}

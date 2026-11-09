@@ -28,13 +28,13 @@ export function KanbanBoard({ orders, onAdvance, busyId, hideDelivered = true }:
         <section
           style={staggerStyle(col)}
           key={stage}
-          className="stagger w-72 shrink-0 rounded-xl bg-steel-200/80 p-2 sm:w-80"
+          className="stagger w-72 shrink-0 rounded-2xl bg-steel-200/70 p-2 sm:w-80"
         >
-          <header className="mb-2 flex items-center justify-between px-1">
-            <h3 className="font-bold text-steel-900">{STAGE_LABELS[stage]}</h3>
+          <header className="mb-2 flex items-center justify-between px-2 pt-1">
+            <h3 className="text-xl font-bold text-steel-900">{STAGE_LABELS[stage]}</h3>
             <span
               key={byStage[stage].length}
-              className="anim-pop rounded-full bg-steel-800 px-2 py-0.5 text-xs font-bold text-white"
+              className="anim-pop inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-ksa-black px-2 font-display font-bold text-ksa-yellow"
             >
               {byStage[stage].length}
             </span>
@@ -46,7 +46,7 @@ export function KanbanBoard({ orders, onAdvance, busyId, hideDelivered = true }:
               </div>
             ))}
             {byStage[stage].length === 0 && (
-              <p className="px-2 py-6 text-center text-sm text-steel-600">Vacío</p>
+              <p className="rounded-xl border-2 border-dashed border-steel-300 px-2 py-6 text-center text-steel-600">Sin órdenes</p>
             )}
           </div>
         </section>

@@ -1,7 +1,7 @@
 # ESTADO del proyecto — KSA Taller
 
 **Fecha:** 9 nov 2026  
-**Versión app:** 0.1.0  
+**Versión app:** 0.2.0 (se ve al pie de cada pantalla, con el commit y la fecha de publicación)  
 **Fase actual:** Fase 1 completa y desplegada en https://ksa-taller.vercel.app; portal de clientes (Fase 3) desplegado, pendiente de configurar Auth/SMTP en Supabase  
 **Estructura:** monorepo `backend/` + `frontend/`
 
@@ -35,6 +35,8 @@ KSA/
 | Portal de clientes: registro, mis órdenes, solicitudes con fotos; gerencia las convierte en orden | Desplegado (9 nov, PR #6); no funciona para clientes hasta configurar Auth/SMTP en Supabase |
 | Animaciones y estados de carga (pantalla de carga con logo, esqueletos, transiciones) | Desplegado (9 nov, PR #7) |
 | Arreglo "Cuenta inactiva" falso al iniciar sesión | Desplegado (9 nov, PR #7) |
+| Rediseño visual (tipografía Barlow, cabecera con pestañas, barra inferior en celular, tarjetas con prioridad en el borde, pantalla de carga con chispas) | Desplegado (9 nov, PR #8) |
+| Actualización automática de la app instalada (PWA) y versión visible | Desplegado (9 nov, PR #8) |
 | Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov tras pausa por inactividad del plan gratuito) |
 | `backend/setup_completo.sql` | Hecho |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
@@ -60,7 +62,10 @@ KSA/
 - Login, shell por rol, tablero Kanban/lista, detalle OT, nueva OT, inventario, admin usuarios
 - Portal de clientes (`/registro`, portal en cualquier ruta para rol `cliente`) y página `/solicitudes` para gerencia; "Crear orden" desde una solicitud precarga la orden y la marca aceptada
 - Inconvenientes: botón "Reportar inconveniente" en cada orden, aviso arriba para gerencia/admin, insignia en las tarjetas del tablero y página `/inconvenientes` para resolver
-- Movimiento y carga (`src/index.css`, `components/ui/Loading.tsx`, `lib/motion.ts`): pantalla de carga con el logo y la franja de seguridad animada, esqueletos con brillo, entrada de páginas, aparición en cascada, botones con spinner, tarjetas que se elevan, contadores que saltan. Solo CSS; se desactiva con *reducir movimiento*
+- Diseño: Barlow / Barlow Condensed (incluidas en la app, funcionan sin conexión), tokens en `src/index.css` con capas `base` y `components`, `.panel`, `.segmented`, botones con relieve; cabecera con pestañas en escritorio y barra inferior con íconos en celular (`components/layout/AppShell.tsx`); fechas legibles (`lib/format.ts`); selector de fotos en español (`components/ui/PhotoPicker.tsx`)
+- Actualización automática (`lib/pwa.ts`, `components/ui/UpdateBanner.tsx`): busca versión nueva cada 5 min y al volver a la pestaña; recarga sola al abrir o si la pestaña está en segundo plano, y si no muestra "Actualizar". Versión visible: `components/ui/AppVersion.tsx`
+- Usuarios: la propia fila no permite cambiar rol ni desactivarse
+- Movimiento y carga (`src/index.css`, `components/ui/Loading.tsx`, `lib/motion.ts`, `hooks/useMinDuration.ts`): bienvenida de al menos 1,4 s al abrir; esqueletos visibles al menos 0,6–0,7 s: pantalla de carga con el logo y la franja de seguridad animada, esqueletos con brillo, entrada de páginas, aparición en cascada, botones con spinner, tarjetas que se elevan, contadores que saltan. Solo CSS; se desactiva con *reducir movimiento*
 - Sesión: `ProtectedRoute` muestra la carga hasta tener el perfil, y un error con Reintentar/Salir si falla (ya no "Cuenta inactiva" falso)
 - Realtime, PWA, fotos opcionales
 - Marca KSA: logo en `public/logo-ksa.png`, favicon e iconos PWA generados del logo, paleta en `src/index.css` (`ksa-black`, `ksa-yellow` #FFE000, `ksa-green` #009A1E) y franja de seguridad `.hazard-stripe`
@@ -91,12 +96,13 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 2. Crear al resto del equipo desde Authentication (entran como `cliente`) y subirles el rol en la pantalla Usuarios.
 3. Activar *Leaked password protection* en Authentication (aviso del advisor).
 4. Probar en producción: login (pantalla de carga, sin "Cuenta inactiva"), inconvenientes en tiempo real, registro de cliente y solicitud con fotos. Si se ve la versión vieja, recargar con Ctrl + Shift + R (caché de la PWA).
-5. Revisar la función `rls_auto_enable` (no viene de nuestras migraciones; `anon` puede ejecutarla).
-6. Plan gratuito de Supabase: el proyecto se pausa tras ~1 semana sin uso.
+5. Protección en la base de datos para no quedarse nunca sin admin (hoy solo la impide la app): propuesta pendiente de aprobar.
+6. Revisar la función `rls_auto_enable` (no viene de nuestras migraciones; `anon` puede ejecutarla).
+7. Plan gratuito de Supabase: el proyecto se pausa tras ~1 semana sin uso.
 
 ### Calidad del código (9 nov 2026)
 
-- `npm run build` OK; aviso de bundle JS de 537 kB / 151 kB gzip (conviene code-splitting por ruta).
+- `npm run build` OK; aviso de bundle JS de 546 kB / 154 kB gzip (conviene code-splitting por ruta).
 - `npm run lint`: 0 errores, 11 avisos (`set-state-in-effect`, memoización del React Compiler, `exhaustive-deps` en `OrderDetailPage`).
 - Sin tests.
 
@@ -112,6 +118,7 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 | #5 | 9 nov | `vercel.json`: rutas de la SPA y `sw.js` sin caché |
 | #6 | 9 nov | Portal de clientes (migración 008) |
 | #7 | 9 nov | Animaciones y carga, arreglo de "Cuenta inactiva", `ESTADO.md` |
+| #8 | 9 nov | Rediseño visual, carga más animada, actualización automática, versión visible, protección de la propia cuenta |
 
 ---
 

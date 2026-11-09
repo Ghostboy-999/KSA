@@ -69,9 +69,6 @@ export function SignupPage() {
           ) : (
             <form onSubmit={onSubmit} className="space-y-4 p-6">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-ksa-green">
-                  Clientes KSA
-                </p>
                 <h1 className="text-3xl font-bold text-steel-900">Crear cuenta</h1>
                 <p className="text-steel-600">
                   Para seguir tus órdenes y enviarnos solicitudes de trabajo.
