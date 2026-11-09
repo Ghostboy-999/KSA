@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { FullScreenLoader } from '../components/ui/Loading'
 import { useAuth } from '../contexts/AuthContext'
-import { useSinceAppStart } from '../hooks/useMinDuration'
+import { useMinDuration, useSinceAppStart } from '../hooks/useMinDuration'
 import { ClientPortalPage } from '../pages/ClientPortalPage'
 import type { UserRole } from '../types/database'
 
@@ -10,9 +10,15 @@ interface Props {
 }
 
 export function ProtectedRoute({ roles }: Props) {
-  const { session, profile, profileError, loading, refreshProfile, signOut } = useAuth()
+  const { session, profile, profileError, loading, signingOut, refreshProfile, signOut } = useAuth()
   // Bienvenida mínima al abrir la app: lo justo para ver la animación, sin hacer esperar
   const splash = useSinceAppStart(1400)
+  // Al entrar, la carga del perfil se ve al menos un momento (sin parpadeo)
+  const waitingProfile = useMinDuration(!!session && (!profile || profile.id !== session.user.id) && !profileError, 900)
+
+  if (signingOut) {
+    return <FullScreenLoader key="salir" steps={['Cerrando sesión', 'Hasta pronto']} />
+  }
 
   if (loading || (splash && session)) {
     return <FullScreenLoader />
@@ -22,7 +28,7 @@ export function ProtectedRoute({ roles }: Props) {
 
   // Recién iniciada la sesión el perfil tarda un momento en llegar:
   // mientras tanto no es "cuenta inactiva", es "cargando".
-  if (!profile || profile.id !== session.user.id) {
+  if (waitingProfile || !profile || profile.id !== session.user.id) {
     if (profileError) {
       return (
         <div className="mx-auto max-w-md space-y-3 p-6 text-center">

@@ -37,6 +37,7 @@ KSA/
 | Arreglo "Cuenta inactiva" falso al iniciar sesión | Desplegado (9 nov, PR #7) |
 | Rediseño visual (tipografía Barlow, cabecera con pestañas, barra inferior en celular, tarjetas con prioridad en el borde, pantalla de carga con chispas) | Desplegado (9 nov, PR #8) |
 | Actualización automática de la app instalada (PWA) y versión visible | Desplegado (9 nov, PR #8) |
+| Carga propia en cada acción (salir, entrar, agregar material, asignar, subir foto, ingresar stock, roles) y errores de acceso en español | Desplegado (9 nov, PR #9) |
 | Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov tras pausa por inactividad del plan gratuito) |
 | `backend/setup_completo.sql` | Hecho |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
@@ -65,6 +66,8 @@ KSA/
 - Diseño: Barlow / Barlow Condensed (incluidas en la app, funcionan sin conexión), tokens en `src/index.css` con capas `base` y `components`, `.panel`, `.segmented`, botones con relieve; cabecera con pestañas en escritorio y barra inferior con íconos en celular (`components/layout/AppShell.tsx`); fechas legibles (`lib/format.ts`); selector de fotos en español (`components/ui/PhotoPicker.tsx`)
 - Actualización automática (`lib/pwa.ts`, `components/ui/UpdateBanner.tsx`): busca versión nueva cada 5 min y al volver a la pestaña; recarga sola al abrir o si la pestaña está en segundo plano, y si no muestra "Actualizar". Versión visible: `components/ui/AppVersion.tsx`
 - Usuarios: la propia fila no permite cambiar rol ni desactivarse
+- Cada acción tiene su carga: pantalla de despedida al salir (`signingOut` en `AuthContext`), carga al entrar, botones con spinner, fotos con esqueleto hasta descargar (`components/ui/FadeImage.tsx`), listas de la nueva orden con "Cargando…"
+- Errores de Supabase Auth traducidos y con qué hacer (`lib/authErrors.ts`)
 - Movimiento y carga (`src/index.css`, `components/ui/Loading.tsx`, `lib/motion.ts`, `hooks/useMinDuration.ts`): bienvenida de al menos 1,4 s al abrir; esqueletos visibles al menos 0,6–0,7 s: pantalla de carga con el logo y la franja de seguridad animada, esqueletos con brillo, entrada de páginas, aparición en cascada, botones con spinner, tarjetas que se elevan, contadores que saltan. Solo CSS; se desactiva con *reducir movimiento*
 - Sesión: `ProtectedRoute` muestra la carga hasta tener el perfil, y un error con Reintentar/Salir si falla (ya no "Cuenta inactiva" falso)
 - Realtime, PWA, fotos opcionales
@@ -93,7 +96,7 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 
 ## Pendiente inmediato
 
-1. Supabase Auth para el portal de clientes: activar *Allow new users to sign up*, dejar *Confirm email* activado, *Site URL* = `https://ksa-taller.vercel.app` y configurar SMTP propio (ver `backend/README.md`).
+1. Supabase Auth para el portal de clientes: activar *Allow new users to sign up*, dejar *Confirm email* activado, *Site URL* = `https://ksa-taller.vercel.app` y **configurar SMTP propio** (ver `backend/README.md`). Sin SMTP propio el registro falla para cualquier correo que no sea de un miembro del equipo en Supabase (probado el 9 nov con un correo de Gmail).
 2. Crear al resto del equipo desde Authentication (entran como `cliente`) y subirles el rol en la pantalla Usuarios.
 3. Activar *Leaked password protection* en Authentication (aviso del advisor).
 4. Probar en producción: login (pantalla de carga, sin "Cuenta inactiva"), inconvenientes en tiempo real, registro de cliente y solicitud con fotos. Si se ve la versión vieja, recargar con Ctrl + Shift + R (caché de la PWA).
@@ -119,7 +122,7 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 | #6 | 9 nov | Portal de clientes (migración 008) |
 | #7 | 9 nov | Animaciones y carga, arreglo de "Cuenta inactiva", `ESTADO.md` |
 | #8 | 9 nov | Rediseño visual, carga más animada, actualización automática, versión visible, protección de la propia cuenta |
-| #9 | 9 nov | Migración 009: la base de datos impide quedarse sin admin |
+| #9 | 9 nov | Migración 009 (siempre queda un admin), carga en cada acción, errores de acceso en español |
 
 ---
 

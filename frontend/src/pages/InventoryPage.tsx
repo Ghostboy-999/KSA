@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useMinDuration } from '../hooks/useMinDuration'
-import { Skeleton } from '../components/ui/Loading'
+import { BusyLabel, Skeleton } from '../components/ui/Loading'
 import { staggerStyle } from '../lib/motion'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -15,11 +15,14 @@ export function InventoryPage() {
   const [qty, setQty] = useState('10')
   const [reason, setReason] = useState('Compra / ingreso')
   const [msg, setMsg] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
 
   async function onAddStock(e: FormEvent) {
     e.preventDefault()
     if (!user || !materialId) return
+    setSaving(true)
     const err = await addStock(materialId, Number(qty), reason, user.id)
+    setSaving(false)
     setMsg(err ?? 'Stock actualizado')
     if (!err) {
       setQty('10')
@@ -166,8 +169,8 @@ export function InventoryPage() {
               placeholder="Motivo"
             />
           </div>
-          <button type="submit" className="btn-touch btn-primary w-full">
-            Registrar ingreso
+          <button type="submit" className="btn-touch btn-primary w-full" disabled={saving}>
+            <BusyLabel busy={saving} busyText="Registrando…">Registrar ingreso</BusyLabel>
           </button>
         </form>
       )}

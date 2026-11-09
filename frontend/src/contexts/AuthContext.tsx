@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
+import { authErrorMessage } from '../lib/authErrors'
 import { supabase } from '../lib/supabase'
 import type { Profile } from '../types/database'
 
@@ -18,6 +19,8 @@ interface AuthState {
   /** El perfil no se pudo cargar (error de red o de permisos), no que esté inactivo */
   profileError: boolean
   loading: boolean
+  /** Cerrando sesión: se muestra la pantalla de despedida */
+  signingOut: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
@@ -44,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [profileError, setProfileError] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
 
   const refreshProfile = useCallback(async () => {
     if (!session?.user) {
@@ -95,12 +99,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error: error?.message ?? null }
+    return { error: authErrorMessage(error) }
   }, [])
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut()
+    setSigningOut(true)
+    // Lo justo para ver la despedida: la sesión se cierra en paralelo
+    await Promise.all([supabase.auth.signOut(), new Promise((r) => setTimeout(r, 1100))])
     setProfile(null)
+    setSigningOut(false)
   }, [])
 
   const value = useMemo(
@@ -110,11 +117,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       profileError,
       loading,
+      signingOut,
       signIn,
       signOut,
       refreshProfile,
     }),
-    [session, profile, profileError, loading, signIn, signOut, refreshProfile],
+    [session, profile, profileError, loading, signingOut, signIn, signOut, refreshProfile],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

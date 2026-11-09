@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { BusyLabel, SkeletonList, Spinner } from '../components/ui/Loading'
 import { useAuth } from '../contexts/AuthContext'
 import { staggerStyle } from '../lib/motion'
 import { supabase } from '../lib/supabase'
@@ -9,6 +10,8 @@ export function AdminUsersPage() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [error, setError] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
+  const [busy, setBusy] = useState<{ id: string; what: 'role' | 'active' } | null>(null)
+  const [loaded, setLoaded] = useState(false)
 
   async function load() {
     const { data, error: err } = await supabase
@@ -17,6 +20,7 @@ export function AdminUsersPage() {
       .order('full_name')
     if (err) setError(err.message)
     setProfiles((data as Profile[]) ?? [])
+    setLoaded(true)
   }
 
   useEffect(() => {
@@ -24,21 +28,25 @@ export function AdminUsersPage() {
   }, [])
 
   async function updateRole(id: string, role: UserRole) {
+    setBusy({ id, what: 'role' })
     const { error: err } = await supabase
       .from('profiles')
       .update({ role })
       .eq('id', id)
     setMsg(err?.message ?? 'Rol actualizado')
     await load()
+    setBusy(null)
   }
 
   async function toggleActive(p: Profile) {
+    setBusy({ id: p.id, what: 'active' })
     const { error: err } = await supabase
       .from('profiles')
       .update({ active: !p.active })
       .eq('id', p.id)
     setMsg(err?.message ?? (p.active ? 'Usuario desactivado' : 'Usuario activado'))
     await load()
+    setBusy(null)
   }
 
   return (
@@ -61,6 +69,8 @@ where id = (select id from auth.users where email = 'su@correo.com');`}
 
       {msg && <p key={msg} className="anim-slide-down panel px-3 py-2 text-sm" role="status">{msg}</p>}
       {error && <p className="text-danger">{error}</p>}
+
+      {!loaded && <SkeletonList count={2} lines={1} />}
 
       <ul className="space-y-3">
         {profiles.map((p, i) => {
@@ -87,8 +97,14 @@ where id = (select id from auth.users where email = 'su@correo.com');`}
               </p>
             ) : (
             <div className="flex flex-wrap gap-2">
+              {busy?.id === p.id && busy.what === 'role' && (
+                <span className="anim-fade-in flex items-center gap-1.5 self-center text-sm text-steel-600">
+                  <Spinner /> Guardando…
+                </span>
+              )}
               <select
-                className="btn-touch border-2 border-steel-300 bg-white"
+                className="btn-touch border-2 border-steel-300 bg-white disabled:opacity-60"
+                disabled={busy?.id === p.id}
                 value={p.role}
                 onChange={(e) => void updateRole(p.id, e.target.value as UserRole)}
               >
@@ -101,9 +117,12 @@ where id = (select id from auth.users where email = 'su@correo.com');`}
               <button
                 type="button"
                 className={`btn-touch ${p.active ? 'btn-danger' : 'btn-primary'}`}
+                disabled={busy?.id === p.id}
                 onClick={() => void toggleActive(p)}
               >
-                {p.active ? 'Desactivar' : 'Activar'}
+                <BusyLabel busy={busy?.id === p.id && busy.what === 'active'} busyText={p.active ? 'Desactivando…' : 'Activando…'}>
+                  {p.active ? 'Desactivar' : 'Activar'}
+                </BusyLabel>
               </button>
             </div>
             )}

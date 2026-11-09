@@ -1,8 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { FadeImage } from '../components/ui/FadeImage'
 import { useMinDuration } from '../hooks/useMinDuration'
 import { PhotoPicker } from '../components/ui/PhotoPicker'
 import { formatDate, formatDateTime, isOverdue } from '../lib/format'
-import { Skeleton, SkeletonList } from '../components/ui/Loading'
+import { BusyLabel, Skeleton, SkeletonList, Spinner } from '../components/ui/Loading'
 import { staggerStyle } from '../lib/motion'
 import { Link, useParams } from 'react-router-dom'
 import { IssueItem } from '../components/issues/IssueItem'
@@ -35,6 +36,7 @@ export function OrderDetailPage() {
   const [msg, setMsg] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const showSkeleton = useMinDuration(loading, 600)
+  const [busy, setBusy] = useState<null | 'assign' | 'material' | 'photo'>(null)
   const { issues, reload: reloadIssues } = useIssues({ orderId: id, enabled: !!id })
   const openIssues = issues.filter((i) => i.status === 'abierto').length
 
@@ -80,6 +82,7 @@ export function OrderDetailPage() {
   async function addMaterial(ev: FormEvent) {
     ev.preventDefault()
     if (!id || !matId) return
+    setBusy('material')
     const { error } = await supabase.from('order_materials').insert({
       order_id: id,
       material_id: matId,
@@ -89,32 +92,38 @@ export function OrderDetailPage() {
     setMatId('')
     setQty('1')
     await load()
+    setBusy(null)
   }
 
   async function assignWorker(assigneeId: string) {
     if (!id) return
+    setBusy('assign')
     const { error } = await supabase
       .from('orders')
       .update({ assignee_id: assigneeId || null })
       .eq('id', id)
     setMsg(error?.message ?? 'Responsable actualizado')
     await load()
+    setBusy(null)
   }
 
   async function uploadPhoto(file: File) {
     if (!id || !order) return
+    setBusy('photo')
     const path = `${id}/${Date.now()}-${file.name}`
     const { error: upErr } = await supabase.storage
       .from('order-photos')
       .upload(path, file)
     if (upErr) {
       setMsg(upErr.message)
+      setBusy(null)
       return
     }
     const { data } = supabase.storage.from('order-photos').getPublicUrl(path)
     await supabase.from('orders').update({ photo_url: data.publicUrl }).eq('id', id)
     setMsg('Foto guardada')
     await load()
+    setBusy(null)
   }
 
   // Solo la primera carga muestra esqueleto; las recargas no hacen parpadear la página
@@ -192,9 +201,17 @@ export function OrderDetailPage() {
 
       {isManager && (
         <section className="stagger panel p-4" style={staggerStyle(2)}>
-          <h3 className="mb-2 text-lg font-bold">Asignar responsable</h3>
+          <h3 className="mb-2 flex items-center gap-2 text-lg font-bold">
+            Asignar responsable
+            {busy === 'assign' && (
+              <span className="anim-fade-in flex items-center gap-1.5 font-sans text-sm font-medium text-steel-600">
+                <Spinner /> Guardando…
+              </span>
+            )}
+          </h3>
           <select
-            className="btn-touch w-full border-2 border-steel-400 bg-white text-left"
+            className="btn-touch w-full border-2 border-steel-400 bg-white text-left disabled:opacity-60"
+            disabled={busy === 'assign'}
             value={order.assignee_id ?? ''}
             onChange={(e) => void assignWorker(e.target.value)}
           >
@@ -258,8 +275,8 @@ export function OrderDetailPage() {
               value={qty}
               onChange={(e) => setQty(e.target.value)}
             />
-            <button type="submit" className="btn-touch btn-primary">
-              Agregar
+            <button type="submit" className="btn-touch btn-primary" disabled={busy === 'material'}>
+              <BusyLabel busy={busy === 'material'} busyText="Agregando…">Agregar</BusyLabel>
             </button>
           </form>
         )}
@@ -268,14 +285,17 @@ export function OrderDetailPage() {
       <section className="stagger panel p-4" style={staggerStyle(4)}>
         <h3 className="mb-2 text-lg font-bold">Foto inicial (opcional)</h3>
         {order.photo_url && (
-          <img
+          <FadeImage
+            key={order.photo_url}
             src={order.photo_url}
             alt="Estado inicial"
-            className="mb-3 max-h-48 rounded-lg object-cover"
+            className="mb-3 h-48 w-full max-w-sm rounded-lg"
           />
         )}
         <PhotoPicker
           label={order.photo_url ? 'Cambiar foto' : 'Tomar o elegir foto'}
+          busy={busy === 'photo'}
+          busyText="Subiendo foto…"
           capture
           onPick={(files) => void uploadPhoto(files[0])}
         />

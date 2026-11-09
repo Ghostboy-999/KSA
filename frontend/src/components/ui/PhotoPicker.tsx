@@ -1,17 +1,22 @@
 import { useId, useRef } from 'react'
+import { Spinner } from './Loading'
 
 interface Props {
   label: string
   multiple?: boolean
   capture?: boolean
   disabled?: boolean
+  /** Subiendo: el botón muestra el indicador */
+  busy?: boolean
+  busyText?: string
   /** Texto bajo el botón, p. ej. "2 fotos seleccionadas" */
   hint?: string
   onPick: (files: File[]) => void
 }
 
 /** Botón grande para tomar o elegir fotos (el selector nativo sale en inglés y es diminuto) */
-export function PhotoPicker({ label, multiple, capture, disabled, hint, onPick }: Props) {
+export function PhotoPicker({ label, multiple, capture, disabled, busy, busyText = 'Subiendo…', hint, onPick }: Props) {
+  const off = disabled || busy
   const id = useId()
   const ref = useRef<HTMLInputElement>(null)
 
@@ -24,7 +29,7 @@ export function PhotoPicker({ label, multiple, capture, disabled, hint, onPick }
         accept="image/*"
         multiple={multiple}
         capture={capture ? 'environment' : undefined}
-        disabled={disabled}
+        disabled={off}
         className="sr-only"
         onChange={(e) => {
           const files = Array.from(e.target.files ?? [])
@@ -34,13 +39,22 @@ export function PhotoPicker({ label, multiple, capture, disabled, hint, onPick }
       />
       <label
         htmlFor={id}
-        className={`btn-touch btn-ghost inline-flex w-full cursor-pointer items-center justify-center gap-2 sm:w-auto ${disabled ? 'pointer-events-none opacity-55' : ''}`}
+        className={`btn-touch btn-ghost inline-flex w-full cursor-pointer items-center justify-center gap-2 sm:w-auto ${off ? 'pointer-events-none opacity-70' : ''}`}
       >
-        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
-          <circle cx="12" cy="13" r="3.5" />
-        </svg>
-        {label}
+        {busy ? (
+          <>
+            <Spinner />
+            {busyText}
+          </>
+        ) : (
+          <>
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+              <circle cx="12" cy="13" r="3.5" />
+            </svg>
+            {label}
+          </>
+        )}
       </label>
       {hint && <p className="mt-1 text-sm text-steel-600">{hint}</p>}
     </div>
