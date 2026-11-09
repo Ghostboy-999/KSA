@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { authErrorMessage } from '../lib/authErrors'
 import { BusyLabel } from '../components/ui/Loading'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -39,7 +40,7 @@ export function SignupPage() {
     })
     setSubmitting(false)
     if (err) {
-      setError(err.message)
+      setError(authErrorMessage(err))
       return
     }
     // Con confirmación de correo activa no hay sesión hasta confirmar

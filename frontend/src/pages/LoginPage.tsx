@@ -18,15 +18,7 @@ export function LoginPage() {
     setSubmitting(true)
     setError(null)
     const { error: err } = await signIn(email.trim(), password)
-    if (err) {
-      setError(
-        /email not confirmed/i.test(err)
-          ? 'Confirma tu correo con el enlace que te enviamos antes de ingresar.'
-          : /invalid login credentials/i.test(err)
-            ? 'Correo o contraseña incorrectos.'
-            : err,
-      )
-    }
+    if (err) setError(err)
     setSubmitting(false)
   }
 

@@ -12,6 +12,7 @@ export function NewOrderPage() {
   const navigate = useNavigate()
   const requestId = useSearchParams()[0].get('solicitud')
   const [clients, setClients] = useState<Client[]>([])
+  const [listsLoading, setListsLoading] = useState(true)
   const [workers, setWorkers] = useState<Profile[]>([])
   const [newClientName, setNewClientName] = useState('')
   const [clientId, setClientId] = useState('')
@@ -40,6 +41,7 @@ export function NewOrderPage() {
     ]).then(([c, w]) => {
       setClients((c.data as Client[]) ?? [])
       setWorkers((w.data as Profile[]) ?? [])
+      setListsLoading(false)
     })
   }, [])
 
@@ -151,7 +153,7 @@ export function NewOrderPage() {
             if (e.target.value) setNewClientName('')
           }}
         >
-          <option value="">— Nuevo cliente abajo —</option>
+          <option value="">{listsLoading ? 'Cargando clientes…' : 'Cliente nuevo (escríbelo abajo)'}</option>
           {clients.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -217,7 +219,7 @@ export function NewOrderPage() {
           value={assigneeId}
           onChange={(e) => setAssigneeId(e.target.value)}
         >
-          <option value="">Sin asignar</option>
+          <option value="">{listsLoading ? 'Cargando trabajadores…' : 'Sin asignar'}</option>
           {workers.map((w) => (
             <option key={w.id} value={w.id}>
               {w.full_name}
