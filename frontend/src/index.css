@@ -185,6 +185,58 @@ textarea:focus {
   box-shadow: inset 0 -4px 0 #a51d1d;
 }
 
+/* Menús desplegables propios (components/ui/Select.tsx) */
+.select-trigger {
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.select-trigger:not(:disabled):hover {
+  border-color: var(--color-steel-700);
+}
+
+.select-trigger[aria-expanded='true'] {
+  box-shadow: 0 0 0 3px var(--color-ksa-yellow);
+}
+
+.select-trigger:disabled {
+  opacity: 0.6;
+}
+
+.select-panel {
+  box-shadow: 0 14px 32px -10px rgb(0 0 0 / 0.35);
+  animation: select-in 140ms ease-out both;
+}
+
+.select-sheet {
+  box-shadow: 0 -12px 32px -8px rgb(0 0 0 / 0.3);
+  animation: sheet-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.select-backdrop {
+  animation: fade-in-backdrop 180ms ease-out both;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fade-in-backdrop {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes select-in {
+  from {
+    opacity: 0;
+    transform: scaleY(0.96);
+  }
+}
+
 /* Flechas redondas del calendario */
 .calendar-nav {
   display: inline-flex;

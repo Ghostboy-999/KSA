@@ -1,11 +1,12 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { BusyLabel } from '../components/ui/Loading'
+import { Dot, Initial, PlusBadge, Select } from '../components/ui/Select'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { updateRequestStatus } from '../hooks/useClientRequests'
 import { createOrder } from '../hooks/useOrders'
 import { supabase } from '../lib/supabase'
-import type { Client, ClientRequest, OrderPriority, Profile } from '../types/database'
+import { PRIORITY_DOT, PRIORITY_LABELS, type Client, type ClientRequest, type OrderPriority, type Profile } from '../types/database'
 
 export function NewOrderPage() {
   const { user } = useAuth()
@@ -143,24 +144,20 @@ export function NewOrderPage() {
         />
       </label>
 
-      <label className="block">
-        <span className="mb-1 block font-semibold">Cliente existente</span>
-        <select
-          className="w-full rounded-xl border-2 border-steel-400 px-4 py-3 text-lg"
-          value={clientId}
-          onChange={(e) => {
-            setClientId(e.target.value)
-            if (e.target.value) setNewClientName('')
-          }}
-        >
-          <option value="">{listsLoading ? 'Cargando clientes…' : 'Cliente nuevo (escríbelo abajo)'}</option>
-          {clients.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      <Select
+        label="Cliente"
+        value={clientId}
+        busy={listsLoading}
+        busyText="Cargando clientes…"
+        onChange={(v) => {
+          setClientId(v)
+          if (v) setNewClientName('')
+        }}
+        options={[
+          { value: '', label: 'Cliente nuevo', hint: 'Escribe el nombre abajo', lead: <PlusBadge /> },
+          ...clients.map((c) => ({ value: c.id, label: c.name, hint: c.phone ?? c.email ?? undefined, lead: <Initial name={c.name} /> })),
+        ]}
+      />
 
       {!clientId && (
         <label className="block">
@@ -187,19 +184,16 @@ export function NewOrderPage() {
       </label>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="block">
-          <span className="mb-1 block font-semibold">Prioridad</span>
-          <select
-            className="w-full rounded-xl border-2 border-steel-400 px-4 py-3 text-lg"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as OrderPriority)}
-          >
-            <option value="baja">Baja</option>
-            <option value="media">Media</option>
-            <option value="alta">Alta</option>
-            <option value="urgente">Urgente</option>
-          </select>
-        </label>
+        <Select<OrderPriority>
+          label="Prioridad"
+          value={priority}
+          onChange={setPriority}
+          options={(['baja', 'media', 'alta', 'urgente'] as OrderPriority[]).map((p) => ({
+            value: p,
+            label: PRIORITY_LABELS[p],
+            lead: <Dot className={PRIORITY_DOT[p]} />,
+          }))}
+        />
 
         <label className="block">
           <span className="mb-1 block font-semibold">Fecha compromiso</span>
@@ -212,21 +206,17 @@ export function NewOrderPage() {
         </label>
       </div>
 
-      <label className="block">
-        <span className="mb-1 block font-semibold">Responsable (opcional)</span>
-        <select
-          className="w-full rounded-xl border-2 border-steel-400 px-4 py-3 text-lg"
-          value={assigneeId}
-          onChange={(e) => setAssigneeId(e.target.value)}
-        >
-          <option value="">{listsLoading ? 'Cargando trabajadores…' : 'Sin asignar'}</option>
-          {workers.map((w) => (
-            <option key={w.id} value={w.id}>
-              {w.full_name}
-            </option>
-          ))}
-        </select>
-      </label>
+      <Select
+        label="Responsable (opcional)"
+        value={assigneeId}
+        busy={listsLoading}
+        busyText="Cargando trabajadores…"
+        onChange={setAssigneeId}
+        options={[
+          { value: '', label: 'Sin asignar', hint: 'Cualquier trabajador la puede tomar' },
+          ...workers.map((w) => ({ value: w.id, label: w.full_name, lead: <Initial name={w.full_name} /> })),
+        ]}
+      />
 
       {error && <p key={error} className="anim-slide-down text-danger" role="alert">{error}</p>}
 

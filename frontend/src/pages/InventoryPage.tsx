@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useMinDuration } from '../hooks/useMinDuration'
 import { BusyLabel, Skeleton } from '../components/ui/Loading'
+import { Dot, Select } from '../components/ui/Select'
 import { staggerStyle } from '../lib/motion'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -139,19 +140,22 @@ export function InventoryPage() {
           className="space-y-3 panel p-4"
         >
           <h3 className="text-lg font-bold">Ingresar stock</h3>
-          <select
+          <Select
             required
-            className="btn-touch w-full border-2 border-steel-400 bg-white text-left"
+            ariaLabel="Material"
+            placeholder="Material…"
             value={materialId}
-            onChange={(e) => setMaterialId(e.target.value)}
-          >
-            <option value="">Material…</option>
-            {materials.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name} ({m.grade})
-              </option>
-            ))}
-          </select>
+            onChange={setMaterialId}
+            options={materials.map((m) => {
+              const low = Number(m.stock_qty) < Number(m.min_stock)
+              return {
+                value: m.id,
+                label: m.grade ? `${m.name} (${m.grade})` : m.name,
+                hint: `Stock ${m.stock_qty} ${m.unit}${low ? ` · bajo el mínimo (${m.min_stock})` : ''}`,
+                lead: <Dot className={low ? 'bg-danger' : 'bg-ksa-green'} />,
+              }
+            })}
+          />
           <div className="flex gap-2">
             <input
               type="number"

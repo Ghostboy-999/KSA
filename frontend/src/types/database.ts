@@ -267,6 +267,22 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   cliente: 'Cliente',
 }
 
+/** Qué ve y hace cada rol (para el menú de Usuarios) */
+export const ROLE_HINTS: Record<UserRole, string> = {
+  admin: 'Todo, incluidos usuarios y roles',
+  gerente: 'Órdenes, inventario, solicitudes e indicadores',
+  trabajador: 'Sus órdenes, inconvenientes y pruebas',
+  cliente: 'Solo su portal de órdenes y solicitudes',
+}
+
+/** Color de cada prioridad (punto en los menús) */
+export const PRIORITY_DOT: Record<OrderPriority, string> = {
+  baja: 'bg-steel-300',
+  media: 'bg-steel-700',
+  alta: 'bg-warn',
+  urgente: 'bg-danger',
+}
+
 export function nextStage(stage: OrderStage): OrderStage | null {
   const i = STAGES.indexOf(stage)
   if (i < 0 || i >= STAGES.length - 1) return null
