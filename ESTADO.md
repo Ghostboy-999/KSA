@@ -1,6 +1,6 @@
 # ESTADO del proyecto — KSA Taller
 
-**Fecha:** 9 nov 2026  
+**Fecha:** 20 nov 2026  
 **Versión app:** 0.2.0 (se ve al pie de cada pantalla, con el commit y la fecha de publicación)  
 **Fase actual:** Fase 1 completa y desplegada en https://ksa-taller.vercel.app; portal de clientes (Fase 3) desplegado, pendiente de configurar Auth/SMTP en Supabase  
 **Estructura:** monorepo `backend/` + `frontend/`
@@ -67,7 +67,7 @@ KSA/
 - Actualización automática (`lib/pwa.ts`, `components/ui/UpdateBanner.tsx`): busca versión nueva cada 5 min y al volver a la pestaña; recarga sola al abrir o si la pestaña está en segundo plano, y si no muestra "Actualizar". Versión visible: `components/ui/AppVersion.tsx`
 - Usuarios: la propia fila no permite cambiar rol ni desactivarse
 - Cada acción tiene su carga: pantalla de despedida al salir (`signingOut` en `AuthContext`), carga al entrar, botones con spinner, fotos con esqueleto hasta descargar (`components/ui/FadeImage.tsx`), listas de la nueva orden con "Cargando…"
-- Errores de Supabase Auth traducidos y con qué hacer (`lib/authErrors.ts`)
+- Errores de Supabase Auth traducidos y con qué hacer (`lib/authErrors.ts`); registrarse con un correo ya usado avisa "Ya hay una cuenta con ese correo" (Supabase no devuelve error en ese caso)
 - Movimiento y carga (`src/index.css`, `components/ui/Loading.tsx`, `lib/motion.ts`, `hooks/useMinDuration.ts`): bienvenida de al menos 1,4 s al abrir; esqueletos visibles al menos 0,6–0,7 s: pantalla de carga con el logo y la franja de seguridad animada, esqueletos con brillo, entrada de páginas, aparición en cascada, botones con spinner, tarjetas que se elevan, contadores que saltan. Solo CSS; se desactiva con *reducir movimiento*
 - Sesión: `ProtectedRoute` muestra la carga hasta tener el perfil, y un error con Reintentar/Salir si falla (ya no "Cuenta inactiva" falso)
 - Realtime, PWA, fotos opcionales
@@ -96,12 +96,13 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 
 ## Pendiente inmediato
 
-1. Supabase Auth para el portal de clientes: activar *Allow new users to sign up*, dejar *Confirm email* activado, *Site URL* = `https://ksa-taller.vercel.app` y **configurar SMTP propio** (ver `backend/README.md`). Sin SMTP propio el registro falla para cualquier correo que no sea de un miembro del equipo en Supabase (probado el 9 nov con un correo de Gmail).
-2. Crear al resto del equipo desde Authentication (entran como `cliente`) y subirles el rol en la pantalla Usuarios.
-3. Activar *Leaked password protection* en Authentication (aviso del advisor).
-4. Probar en producción: login (pantalla de carga, sin "Cuenta inactiva"), inconvenientes en tiempo real, registro de cliente y solicitud con fotos. Si se ve la versión vieja, recargar con Ctrl + Shift + R (caché de la PWA).
-5. Revisar la función `rls_auto_enable` (no viene de nuestras migraciones; `anon` puede ejecutarla).
-6. Plan gratuito de Supabase: el proyecto se pausa tras ~1 semana sin uso.
+1. **"Confirm email" está DESACTIVADO desde el 9 nov para la demostración** (el registro funciona sin SMTP). Volver a activarlo antes de usar con clientes reales: con él apagado, alguien podría registrarse con el correo de otro cliente y ver sus órdenes.
+2. Supabase Auth para el portal de clientes: activar *Allow new users to sign up*, dejar *Confirm email* activado, *Site URL* = `https://ksa-taller.vercel.app` y **configurar SMTP propio** (ver `backend/README.md`). Sin SMTP propio el registro falla para cualquier correo que no sea de un miembro del equipo en Supabase (probado el 9 nov con un correo de Gmail).
+3. Crear al resto del equipo desde Authentication (entran como `cliente`) y subirles el rol en la pantalla Usuarios.
+4. Activar *Leaked password protection* en Authentication (aviso del advisor).
+5. Probar en producción: login (pantalla de carga, sin "Cuenta inactiva"), inconvenientes en tiempo real, registro de cliente y solicitud con fotos. Si se ve la versión vieja, recargar con Ctrl + Shift + R (caché de la PWA).
+6. Revisar la función `rls_auto_enable` (no viene de nuestras migraciones; `anon` puede ejecutarla).
+7. Plan gratuito de Supabase: el proyecto se pausa tras ~1 semana sin uso.
 
 ### Calidad del código (9 nov 2026)
 
@@ -123,6 +124,7 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 | #7 | 9 nov | Animaciones y carga, arreglo de "Cuenta inactiva", `ESTADO.md` |
 | #8 | 9 nov | Rediseño visual, carga más animada, actualización automática, versión visible, protección de la propia cuenta |
 | #9 | 9 nov | Migración 009 (siempre queda un admin), carga en cada acción, errores de acceso en español |
+| #10 | 20 nov | Aviso al registrarse con un correo que ya tiene cuenta |
 
 ---
 
