@@ -2,7 +2,7 @@
 
 **Fecha:** 20 nov 2026  
 **Versión app:** 0.2.0 (se ve al pie de cada pantalla, con el commit y la fecha de publicación)  
-**Fase actual:** Fase 1 completa y desplegada en https://ksa-taller.vercel.app; portal de clientes (Fase 3) desplegado, pendiente de configurar Auth/SMTP en Supabase  
+**Fase actual:** Fase 1 completa y desplegada en https://ksa-taller.vercel.app; portal de clientes (Fase 3) desplegado y probado con registro real (sin confirmación de correo, solo para la demostración)  
 **Estructura:** monorepo `backend/` + `frontend/`
 
 ---
@@ -38,10 +38,10 @@ KSA/
 | Rediseño visual (tipografía Barlow, cabecera con pestañas, barra inferior en celular, tarjetas con prioridad en el borde, pantalla de carga con chispas) | Desplegado (9 nov, PR #8) |
 | Actualización automática de la app instalada (PWA) y versión visible | Desplegado (9 nov, PR #8) |
 | Carga propia en cada acción (salir, entrar, agregar material, asignar, subir foto, ingresar stock, roles) y errores de acceso en español | Desplegado (9 nov, PR #9) |
-| Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov tras pausa por inactividad del plan gratuito) |
+| Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov y el 20 nov tras pausas por inactividad del plan gratuito; la reactivación tarda ~5 min) |
 | `backend/setup_completo.sql` | Hecho |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
-| Usuarios Auth + roles | Una sola cuenta: admin `davidcopete123@gmail.com` (David Torres). El 9 nov quedó como `gerente` sin ningún admin; se restauró `admin` desde SQL. Desde la migración 009 la base de datos impide quedarse sin admin activo |
+| Usuarios Auth + roles | 3 cuentas: admin `davidcopete123@gmail.com` (David Torres), un trabajador (`sergei@gmail.com`, registrado y subido de rol desde Usuarios) y un cliente de prueba (`empty@gmail.com`, registrado desde la app y vinculado a su ficha). El 9 nov la cuenta admin quedó como `gerente`; se restauró desde SQL y desde la migración 009 la base de datos impide quedarse sin admin activo |
 | Deploy Vercel (proyecto `ksa-taller`, root dir = `frontend`) | Hecho — https://ksa-taller.vercel.app, se despliega solo al fusionar en `main`; protección estándar (producción abierta, vistas previas con login de Vercel) |
 | Fase 2 | No iniciada |
 | Fase 3 | Portal de clientes hecho; WhatsApp y cotizaciones sin iniciar |
@@ -88,9 +88,9 @@ KSA/
 `setup_completo.sql` concatena 001–009 para instalar en un proyecto vacío.
 En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen en el historial de migraciones de Supabase, pero sus cambios están verificados en la base.
 
-### Datos actuales (9 nov 2026)
+### Datos actuales (20 nov 2026)
 
-1 perfil (admin), 4 materiales (seed de aceros), 0 órdenes, 0 clientes, 0 solicitudes, 0 inconvenientes.
+3 perfiles (1 admin, 1 trabajador, 1 cliente), 1 cliente, 4 materiales (seed de aceros), 2 órdenes, 2 solicitudes de cliente, 2 inconvenientes. Todo son datos de prueba.
 
 ---
 
@@ -125,6 +125,7 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 | #8 | 9 nov | Rediseño visual, carga más animada, actualización automática, versión visible, protección de la propia cuenta |
 | #9 | 9 nov | Migración 009 (siempre queda un admin), carga en cada acción, errores de acceso en español |
 | #10 | 20 nov | Aviso al registrarse con un correo que ya tiene cuenta |
+| #11 | 20 nov | `ESTADO.md`: cuentas y datos actuales, segunda reactivación de Supabase |
 
 ---
 
