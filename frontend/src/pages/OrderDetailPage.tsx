@@ -1,15 +1,17 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { FadeImage } from '../components/ui/FadeImage'
 import { useMinDuration } from '../hooks/useMinDuration'
 import { PhotoPicker } from '../components/ui/PhotoPicker'
 import { formatDate, formatDateTime, isOverdue } from '../lib/format'
 import { BusyLabel, Skeleton, SkeletonList, Spinner } from '../components/ui/Loading'
 import { staggerStyle } from '../lib/motion'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { IssueItem } from '../components/issues/IssueItem'
 import { IssueReportForm } from '../components/issues/IssueReportForm'
+import { PressureTestForm, PressureTestHistory } from '../components/orders/PressureTestCard'
 import { useAuth } from '../contexts/AuthContext'
 import { useIssues } from '../hooks/useIssues'
+import { useOrderTests } from '../hooks/useOrderTests'
 import { supabase } from '../lib/supabase'
 import {
   PRIORITY_LABELS,
@@ -39,10 +41,12 @@ export function OrderDetailPage() {
   const [busy, setBusy] = useState<null | 'assign' | 'material' | 'photo'>(null)
   const { issues, reload: reloadIssues } = useIssues({ orderId: id, enabled: !!id })
   const openIssues = issues.filter((i) => i.status === 'abierto').length
+  const { tests, reload: reloadTests } = useOrderTests(id)
+  const { hash } = useLocation()
+  const orderLoaded = !!order
 
-  async function load() {
+  const load = useCallback(async () => {
     if (!id) return
-    setLoading(true)
 
     const [o, e, om, m, w] = await Promise.all([
       supabase
@@ -73,11 +77,21 @@ export function OrderDetailPage() {
     setMaterials((m.data as Material[]) ?? [])
     setWorkers((w.data as Profile[]) ?? [])
     setLoading(false)
-  }
+  }, [id])
 
   useEffect(() => {
     void load()
-  }, [id])
+  }, [load])
+
+  // Desde el tablero, "Registrar prueba" baja directo a la tarjeta
+  useEffect(() => {
+    if (orderLoaded && hash === '#prueba') document.getElementById('prueba')?.scrollIntoView({ behavior: 'smooth' })
+  }, [orderLoaded, hash])
+
+  async function onTestRecorded(passed: boolean) {
+    setMsg(passed ? 'Prueba aprobada: la orden pasó a Lista' : 'Prueba no aprobada: la orden volvió a taller')
+    await Promise.all([load(), reloadTests()])
+  }
 
   async function addMaterial(ev: FormEvent) {
     ev.preventDefault()
@@ -145,6 +159,8 @@ export function OrderDetailPage() {
     )
   if (!order) return <p>Orden no encontrada.</p>
 
+  const canTest = isManager || !order.assignee_id || order.assignee_id === profile?.id
+
   return (
     <div className="space-y-5">
       <Link to="/" className="inline-flex items-center gap-1 font-display text-lg font-semibold text-steel-700 hover:text-ksa-black">
@@ -173,6 +189,21 @@ export function OrderDetailPage() {
 
       {msg && (
         <p key={msg} className="anim-slide-down panel px-3 py-2 text-sm font-medium" role="status">{msg}</p>
+      )}
+
+      {(order.stage === 'pruebas' || tests.length > 0) && (
+        <section id="prueba" className="stagger panel scroll-mt-24 p-4" style={staggerStyle(1)}>
+          <h3 className="mb-3 text-lg font-bold">Prueba hidráulica</h3>
+          {order.stage === 'pruebas' && canTest && (
+            <div className="mb-5">
+              <PressureTestForm key={tests.length} orderId={order.id} onRecorded={(p) => void onTestRecorded(p)} />
+            </div>
+          )}
+          {order.stage === 'pruebas' && !canTest && (
+            <p className="mb-3 text-steel-600">La prueba la registra el responsable de la orden o gerencia.</p>
+          )}
+          <PressureTestHistory tests={tests} />
+        </section>
       )}
 
       <section className="stagger panel p-4" style={staggerStyle(1)}>

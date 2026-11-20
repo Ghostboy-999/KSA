@@ -69,7 +69,12 @@ export function OrderCard({ order, onAdvance, busy, showStage = false }: Props) 
         <Link to={`/orden/${order.id}`} className="btn-touch btn-ghost flex-1 text-center">
           Ver
         </Link>
-        {next && onAdvance && (
+        {order.stage === 'pruebas' && onAdvance && (
+          <Link to={`/orden/${order.id}#prueba`} className="btn-touch btn-primary flex-[1.6] text-center">
+            Registrar prueba
+          </Link>
+        )}
+        {next && onAdvance && order.stage !== 'pruebas' && (
           <button
             type="button"
             className="btn-touch btn-primary flex-[1.6]"

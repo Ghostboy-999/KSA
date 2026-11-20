@@ -4,14 +4,66 @@ import { BusyLabel } from '../components/ui/Loading'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
+const WELCOME_KEY = 'ksa:welcome-seen'
+
+function welcomeSeen() {
+  try {
+    return localStorage.getItem(WELCOME_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+/** Portada de la primera visita (mockup 01) */
+function Welcome({ onEnter }: { onEnter: () => void }) {
+  return (
+    <div className="flex min-h-full flex-col bg-ksa-black text-steel-100">
+      <div className="hazard-stripe" aria-hidden="true" />
+      <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 py-10 text-center">
+        <div className="relative">
+          <span className="loader-glow" aria-hidden="true" />
+          <img src="/logo-ksa.png" alt="KSA S.A.S Servicios Industriales" className="anim-fade-in relative w-60 max-w-[70vw] sm:w-72" />
+        </div>
+        <h1 className="anim-fade-up font-display text-5xl font-bold text-ksa-yellow">KSA Taller</h1>
+        <p className="anim-fade-up font-display text-base font-bold tracking-[0.2em] text-ksa-green uppercase" style={{ animationDelay: '80ms' }}>
+          Órdenes e inventario del taller
+        </p>
+        <p className="anim-fade-up max-w-xs text-lg text-steel-300" style={{ animationDelay: '140ms' }}>
+          Cada trabajo, cada acero y cada prueba en un solo registro compartido.
+        </p>
+        <button type="button" className="anim-fade-up btn-touch btn-primary mt-4 w-full max-w-xs text-xl" style={{ animationDelay: '200ms' }} onClick={onEnter}>
+          Entrar
+        </button>
+        <p className="text-sm text-steel-400">Instálala en el celular desde el menú del navegador</p>
+      </div>
+      <div className="hazard-stripe" aria-hidden="true" />
+    </div>
+  )
+}
+
 export function LoginPage() {
   const { session, signIn, loading } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(() => !welcomeSeen())
 
   if (!loading && session) return <Navigate to="/" replace />
+
+  if (showWelcome)
+    return (
+      <Welcome
+        onEnter={() => {
+          try {
+            localStorage.setItem(WELCOME_KEY, '1')
+          } catch {
+            /* sin almacenamiento: se vuelve a mostrar la próxima vez */
+          }
+          setShowWelcome(false)
+        }}
+      />
+    )
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
