@@ -6,7 +6,7 @@ Proyecto: `eylefnchunsywabgdzhy` — https://eylefnchunsywabgdzhy.supabase.co
 
 ## Instalación rápida
 
-Pega **todo** [`setup_completo.sql`](setup_completo.sql) en Supabase → **SQL Editor** → **Run**, una sola vez en un proyecto vacío. Contiene las migraciones 001–009 en orden.
+Pega **todo** [`setup_completo.sql`](setup_completo.sql) en Supabase → **SQL Editor** → **Run**, una sola vez en un proyecto vacío. Contiene las migraciones 001–011 en orden.
 
 ## Migraciones
 
@@ -21,6 +21,8 @@ Si prefieres aplicarlas una a una, **en este orden**:
 7. `migrations/007_order_issues.sql` — inconvenientes por orden (`order_issues`): el equipo reporta, gerencia resuelve; Realtime activado
 8. `migrations/008_client_portal.sql` — portal de clientes: toda cuenta nueva entra como `cliente`, vínculo cuenta↔ficha por correo confirmado (`claim_client_account`), órdenes del cliente vía `client_orders()`, tabla `client_requests` y bucket privado `request-photos`
 9. `migrations/009_keep_admin.sql` — siempre queda al menos un admin activo (también desde el SQL Editor) y nadie cambia su propio rol ni se desactiva desde la app
+10. `migrations/010_lock_rls_auto_enable.sql` — la función `rls_auto_enable()` que crea Supabase deja de poder llamarse por `/rest/v1/rpc` (sigue activando RLS en tablas nuevas)
+11. `migrations/011_order_tests.sql` — prueba hidráulica por orden (`order_tests`): checklist, PSI, aprobó/no aprobó y reproceso; al aprobar la orden pasa a `lista`, si no vuelve a `en_taller` (o a `materiales` si faltan)
 
 Si cambias una migración, regenera `setup_completo.sql` (concatenación de `migrations/00*.sql`).
 
@@ -50,6 +52,6 @@ where id = (select id from auth.users where email = 'davidcopete123@gmail.com');
 
 ## Tablas
 
-`profiles`, `clients`, `suppliers`, `materials`, `orders`, `order_events`, `order_materials`, `stock_movements`, `order_issues`, `client_requests`
+`profiles`, `clients`, `suppliers`, `materials`, `orders`, `order_events`, `order_materials`, `stock_movements`, `order_issues`, `client_requests`, `order_tests`
 
 Vistas: `order_shortages`, `materials_below_min`
