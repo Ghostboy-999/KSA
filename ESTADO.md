@@ -44,7 +44,7 @@ KSA/
 | Usuarios Auth + roles | 3 cuentas: admin `davidcopete123@gmail.com` (David Torres), un trabajador (`sergei@gmail.com`, registrado y subido de rol desde Usuarios) y un cliente de prueba (`empty@gmail.com`, registrado desde la app y vinculado a su ficha). El 9 nov la cuenta admin quedó como `gerente`; se restauró desde SQL y desde la migración 009 la base de datos impide quedarse sin admin activo |
 | Deploy Vercel (proyecto `ksa-taller`, root dir = `frontend`) | Hecho — https://ksa-taller.vercel.app, se despliega solo al fusionar en `main`; protección estándar (producción abierta, vistas previas con login de Vercel) |
 | Fase 2 | No iniciada |
-| Fase 3 | Portal de clientes hecho; WhatsApp y cotizaciones sin iniciar |
+| Fase 3 | Portal de clientes hecho y probado de punta a punta (cliente → solicitud → orden); WhatsApp y cotizaciones sin iniciar |
 
 ---
 
@@ -86,11 +86,11 @@ KSA/
 9. `009_keep_admin.sql` — siempre queda al menos un admin activo; nadie cambia su propio rol ni se desactiva
 
 `setup_completo.sql` concatena 001–009 para instalar en un proyecto vacío.
-En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen en el historial de migraciones de Supabase, pero sus cambios están verificados en la base.
+En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen en el historial de migraciones de Supabase (que muestra 7 entradas: 001–004, `order_issues`, `client_portal`, `keep_admin`), pero sus cambios están verificados en la base.
 
 ### Datos actuales (20 nov 2026)
 
-3 perfiles (1 admin, 1 trabajador, 1 cliente), 1 cliente, 4 materiales (seed de aceros), 2 órdenes, 2 solicitudes de cliente, 2 inconvenientes. Todo son datos de prueba.
+3 perfiles (1 admin, 1 trabajador, 1 cliente), 1 cliente, 4 materiales (seed de aceros), 2 órdenes, 2 solicitudes de cliente (ambas aceptadas y convertidas en orden), 2 inconvenientes. Todo son datos de prueba.
 
 ---
 
@@ -106,9 +106,9 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 
 ### Calidad del código (9 nov 2026)
 
-- `npm run build` OK; aviso de bundle JS de 546 kB / 154 kB gzip (conviene code-splitting por ruta).
+- `npm ci` y `npm run build` OK (revisado el 20 nov); aviso de bundle JS de 550 kB / 156 kB gzip (conviene code-splitting por ruta).
 - `npm run lint`: 0 errores, 11 avisos (`set-state-in-effect`, memoización del React Compiler, `exhaustive-deps` en `OrderDetailPage`).
-- Sin tests.
+- Sin tests automáticos en el repositorio. Las pruebas de navegador (Playwright con la API simulada) se han hecho fuera del repo; conviene añadirlas a `frontend/`.
 
 ---
 
@@ -126,6 +126,7 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 | #9 | 9 nov | Migración 009 (siempre queda un admin), carga en cada acción, errores de acceso en español |
 | #10 | 20 nov | Aviso al registrarse con un correo que ya tiene cuenta |
 | #11 | 20 nov | `ESTADO.md`: cuentas y datos actuales, segunda reactivación de Supabase |
+| #12 | 20 nov | `ESTADO.md`: revisión general (build, migraciones, datos, tests) |
 
 ---
 
