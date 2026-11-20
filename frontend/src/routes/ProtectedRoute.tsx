@@ -1,9 +1,12 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { FullScreenLoader } from '../components/ui/Loading'
 import { useAuth } from '../contexts/AuthContext'
 import { useMinDuration, useSinceAppStart } from '../hooks/useMinDuration'
-import { ClientPortalPage } from '../pages/ClientPortalPage'
 import type { UserRole } from '../types/database'
+
+// El portal de clientes solo se descarga para cuentas de cliente
+const ClientPortalPage = lazy(() => import('../pages/ClientPortalPage').then((m) => ({ default: m.ClientPortalPage })))
 
 interface Props {
   roles?: UserRole[]
@@ -58,7 +61,12 @@ export function ProtectedRoute({ roles }: Props) {
   }
 
   // Los clientes solo tienen su portal, en cualquier ruta
-  if (profile.role === 'cliente') return <ClientPortalPage />
+  if (profile.role === 'cliente')
+    return (
+      <Suspense fallback={<FullScreenLoader />}>
+        <ClientPortalPage />
+      </Suspense>
+    )
 
   if (roles && !roles.includes(profile.role)) {
     return <Navigate to="/" replace />

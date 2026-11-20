@@ -150,6 +150,33 @@ export interface OrderEvent {
   profiles?: Pick<Profile, 'full_name'> | null
 }
 
+export interface TestCheckItem {
+  item: string
+  ok: boolean
+}
+
+/** Prueba hidráulica registrada en la etapa de pruebas */
+export interface OrderTest {
+  id: string
+  order_id: string
+  checklist: TestCheckItem[]
+  pressure_psi: number | null
+  passed: boolean
+  rework: boolean
+  notes: string | null
+  tested_by: string | null
+  created_at: string
+  tester?: Pick<Profile, 'full_name'> | null
+}
+
+/** Puntos que se revisan antes de presurizar */
+export const TEST_CHECKLIST = [
+  'Medidas verificadas contra el plano',
+  'Sellos y empaques instalados',
+  'Conexiones y racores apretados',
+  'Pieza limpia y purgada',
+]
+
 export interface OrderShortage {
   order_id: string
   order_code: string
