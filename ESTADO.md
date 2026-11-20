@@ -42,7 +42,7 @@ KSA/
 | Proyecto Supabase | `eylefnchunsywabgdzhy` — activo (reactivado el 9 nov y el 20 nov tras pausas por inactividad del plan gratuito; la reactivación tarda ~5 min) |
 | `backend/setup_completo.sql` | Hecho |
 | `.env.local` en `frontend/` | URL + publishable key (local, no se sube) |
-| Usuarios Auth + roles | 3 cuentas: admin `davidcopete123@gmail.com` (David Torres), un trabajador (`sergei@gmail.com`, registrado y subido de rol desde Usuarios) y un cliente de prueba (`empty@gmail.com`, registrado desde la app y vinculado a su ficha). El 9 nov la cuenta admin quedó como `gerente`; se restauró desde SQL y desde la migración 009 la base de datos impide quedarse sin admin activo |
+| Usuarios Auth + roles | 3 cuentas: admin `davidcopete123@gmail.com` (David Torres), un trabajador (`sergei@gmail.com`, registrado y subido de rol desde Usuarios) y un cliente de prueba (`empty@gmail.com`, registrado desde la app y vinculado a su ficha; el 20 nov su ficha y su perfil pasaron de "empty" a **Constructora Bolívar**, el nombre de ejemplo de los mockups). El 9 nov la cuenta admin quedó como `gerente`; se restauró desde SQL y desde la migración 009 la base de datos impide quedarse sin admin activo |
 | Deploy Vercel (proyecto `ksa-taller`, root dir = `frontend`) | Hecho — https://ksa-taller.vercel.app, se despliega solo al fusionar en `main`; protección estándar (producción abierta, vistas previas con login de Vercel) |
 | Fase 2 | Iniciada: prueba hidráulica con reproceso e indicadores; garantía sin iniciar |
 | Fase 3 | Portal de clientes hecho y probado de punta a punta (cliente → solicitud → orden); WhatsApp y cotizaciones sin iniciar |
