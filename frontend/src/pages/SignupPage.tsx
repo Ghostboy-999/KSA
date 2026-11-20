@@ -43,6 +43,12 @@ export function SignupPage() {
       setError(authErrorMessage(err))
       return
     }
+    // Correo ya registrado: Supabase responde sin error (para no revelar qué correos
+    // existen) pero devuelve el usuario sin identidades
+    if (data.user && !data.session && data.user.identities?.length === 0) {
+      setError(authErrorMessage({ code: 'user_already_exists' }))
+      return
+    }
     // Con confirmación de correo activa no hay sesión hasta confirmar
     if (!data.session) setSentTo(email.trim())
   }
