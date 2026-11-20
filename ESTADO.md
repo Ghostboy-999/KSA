@@ -1,7 +1,7 @@
 # ESTADO del proyecto — KSA Taller
 
 **Fecha:** 20 nov 2026  
-**Versión app:** 0.3.0 (se ve al pie de cada pantalla, con el commit y la fecha de publicación)  
+**Versión app:** 0.3.1 (se ve al pie de cada pantalla, con el commit y la fecha de publicación)  
 **Fase actual:** Fase 1 completa y desplegada en https://ksa-taller.vercel.app; portal de clientes (Fase 3) desplegado y probado con registro real (sin confirmación de correo, solo para la demostración)  
 **Estructura:** monorepo `backend/` + `frontend/`
 
@@ -71,6 +71,7 @@ KSA/
 - Prueba hidráulica (`components/orders/PressureTestCard.tsx`, `hooks/useOrderTests.ts`): en el detalle de una orden en *Pruebas*, checklist de 4 puntos → PSI → aprobó / no aprobó → reproceso; al registrarla la base mueve la orden. En el tablero, las órdenes en Pruebas muestran "Registrar prueba" en vez de saltar a Lista
 - Bienvenida (mockup 01) en la primera visita a `/login` (se recuerda en el navegador)
 - Navegación (`components/layout/navItems.tsx`): en celular la barra inferior es Tablero · Inventario · Calendario · Menú, y `/menu` (mockup 03) tiene el resto según el rol y Cerrar sesión; en pantallas de 1024 px o más, pestañas arriba
+- Menús desplegables propios (`components/ui/Select.tsx`) en lugar del `<select>` del navegador: en celular se abren como hoja inferior y en pantallas anchas como panel flotante; buscador con más de 7 opciones, descripción por opción (permisos de cada rol, stock de cada material), color por prioridad, teclado completo y validación `required`. Usados en Nueva orden, Usuarios, detalle de orden, Inventario e Inconvenientes
 - Pantallas cargadas por partes (`React.lazy` en `App.tsx` y el portal de clientes en `ProtectedRoute`)
 - Usuarios: la propia fila no permite cambiar rol ni desactivarse
 - Cada acción tiene su carga: pantalla de despedida al salir (`signingOut` en `AuthContext`), carga al entrar, botones con spinner, fotos con esqueleto hasta descargar (`components/ui/FadeImage.tsx`), listas de la nueva orden con "Cargando…"
@@ -136,6 +137,7 @@ En `eylefnchunsywabgdzhy`, 005 y 006 se aplicaron desde el SQL Editor: no salen 
 | #10 | 20 nov | Aviso al registrarse con un correo que ya tiene cuenta |
 | #11 | 20 nov | `ESTADO.md`: cuentas y datos actuales, segunda reactivación de Supabase |
 | #12 | 20 nov | `ESTADO.md`: revisión general (build, migraciones, datos, tests) |
+| #14 | 20 nov | Menús desplegables con la marca KSA (0.3.1) |
 | #13 | 20 nov | Migraciones 010–011, calendario, indicadores, prueba hidráulica, bienvenida, menú por rol, carga por partes (0.3.0) |
 
 ---

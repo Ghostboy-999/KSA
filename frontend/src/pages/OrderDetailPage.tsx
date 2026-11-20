@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { FadeImage } from '../components/ui/FadeImage'
+import { Dot, Initial, Select } from '../components/ui/Select'
 import { useMinDuration } from '../hooks/useMinDuration'
 import { PhotoPicker } from '../components/ui/PhotoPicker'
 import { formatDate, formatDateTime, isOverdue } from '../lib/format'
@@ -240,19 +241,16 @@ export function OrderDetailPage() {
               </span>
             )}
           </h3>
-          <select
-            className="btn-touch w-full border-2 border-steel-400 bg-white text-left disabled:opacity-60"
-            disabled={busy === 'assign'}
+          <Select
+            ariaLabel="Responsable"
             value={order.assignee_id ?? ''}
-            onChange={(e) => void assignWorker(e.target.value)}
-          >
-            <option value="">Sin asignar</option>
-            {workers.map((w) => (
-              <option key={w.id} value={w.id}>
-                {w.full_name}
-              </option>
-            ))}
-          </select>
+            disabled={busy === 'assign'}
+            onChange={(v) => void assignWorker(v)}
+            options={[
+              { value: '', label: 'Sin asignar', hint: 'Cualquier trabajador la puede tomar' },
+              ...workers.map((w) => ({ value: w.id, label: w.full_name, lead: <Initial name={w.full_name} /> })),
+            ]}
+          />
         </section>
       )}
 
@@ -284,19 +282,23 @@ export function OrderDetailPage() {
 
         {isManager && (
           <form onSubmit={addMaterial} className="flex flex-col gap-2 sm:flex-row">
-            <select
+            <Select
               required
-              className="btn-touch flex-1 border-2 border-steel-400 bg-white text-left"
+              className="flex-1"
+              ariaLabel="Material"
+              placeholder="Material…"
               value={matId}
-              onChange={(e) => setMatId(e.target.value)}
-            >
-              <option value="">Material…</option>
-              {materials.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name} — stock {m.stock_qty} {m.unit}
-                </option>
-              ))}
-            </select>
+              onChange={setMatId}
+              options={materials.map((m) => {
+                const low = Number(m.stock_qty) < Number(m.min_stock)
+                return {
+                  value: m.id,
+                  label: m.grade ? `${m.name} (${m.grade})` : m.name,
+                  hint: `Stock ${m.stock_qty} ${m.unit}${low ? ` · bajo el mínimo (${m.min_stock})` : ''}`,
+                  lead: <Dot className={low ? 'bg-danger' : 'bg-ksa-green'} />,
+                }
+              })}
+            />
             <input
               type="number"
               min="0.01"

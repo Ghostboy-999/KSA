@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { BusyLabel } from '../ui/Loading'
+import { Select } from '../ui/Select'
 import { reportIssue } from '../../hooks/useIssues'
 import { ISSUE_TYPES, ISSUE_TYPE_LABELS, type IssueType } from '../../types/database'
 
@@ -52,21 +53,13 @@ export function IssueReportForm({ orderId, onReported }: Props) {
 
   return (
     <form onSubmit={submit} className="anim-fade-up space-y-2">
-      <label className="block text-sm font-semibold" htmlFor="issue-type">
-        ¿Qué pasó?
-      </label>
-      <select
+      <Select<IssueType>
         id="issue-type"
-        className="btn-touch w-full border-2 border-steel-400 bg-white text-left"
+        label="¿Qué pasó?"
         value={type}
-        onChange={(e) => setType(e.target.value as IssueType)}
-      >
-        {ISSUE_TYPES.map((t) => (
-          <option key={t} value={t}>
-            {ISSUE_TYPE_LABELS[t]}
-          </option>
-        ))}
-      </select>
+        onChange={setType}
+        options={ISSUE_TYPES.map((t) => ({ value: t, label: ISSUE_TYPE_LABELS[t] }))}
+      />
       <textarea
         required
         rows={3}

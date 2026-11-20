@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { BusyLabel, SkeletonList, Spinner } from '../components/ui/Loading'
+import { Select } from '../components/ui/Select'
 import { useAuth } from '../contexts/AuthContext'
 import { staggerStyle } from '../lib/motion'
 import { supabase } from '../lib/supabase'
-import { ROLE_LABELS, type Profile, type UserRole } from '../types/database'
+import { ROLE_HINTS, ROLE_LABELS, type Profile, type UserRole } from '../types/database'
 
 export function AdminUsersPage() {
   const { user } = useAuth()
@@ -102,18 +103,16 @@ where id = (select id from auth.users where email = 'su@correo.com');`}
                   <Spinner /> Guardando…
                 </span>
               )}
-              <select
-                className="btn-touch border-2 border-steel-300 bg-white disabled:opacity-60"
-                disabled={busy?.id === p.id}
+              <Select<UserRole>
+                compact
+                align="right"
+                className="w-48"
+                ariaLabel={`Rol de ${p.full_name}`}
                 value={p.role}
-                onChange={(e) => void updateRole(p.id, e.target.value as UserRole)}
-              >
-                {(Object.keys(ROLE_LABELS) as UserRole[]).map((r) => (
-                  <option key={r} value={r}>
-                    {ROLE_LABELS[r]}
-                  </option>
-                ))}
-              </select>
+                disabled={busy?.id === p.id}
+                onChange={(r) => void updateRole(p.id, r)}
+                options={(Object.keys(ROLE_LABELS) as UserRole[]).map((r) => ({ value: r, label: ROLE_LABELS[r], hint: ROLE_HINTS[r] }))}
+              />
               <button
                 type="button"
                 className={`btn-touch ${p.active ? 'btn-danger' : 'btn-primary'}`}
